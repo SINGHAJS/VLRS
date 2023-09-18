@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: const Text('First App'),
         ),
-        body: MapScreen(),
+        body: const MapScreen(),
       ),
     );
   }
