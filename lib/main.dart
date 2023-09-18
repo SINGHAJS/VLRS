@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './screens/map_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: const Text('First App'),
         ),
-        body: Container(),
+        body: MapScreen(),
       ),
     );
   }
