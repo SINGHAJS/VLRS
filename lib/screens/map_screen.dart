@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:vlrs/services/geolocation_service.dart';
+import 'package:lottie/lottie.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -34,8 +35,8 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     if (_isLocationDataLoading == true) {
       // Show a loading indicator while waiting for user location
-      return const Center(
-        child: CircularProgressIndicator(),
+      return Center(
+        child: Lottie.asset("assets/animations/animation_lmpkib5u.json"),
       );
     } else {
       return FlutterMap(
