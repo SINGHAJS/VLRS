@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:vlrs/services/geolocation_service.dart';
-import 'package:lottie/lottie.dart';
+import 'package:lottie/lottie.dart' as lottie;
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -36,7 +36,7 @@ class _MapScreenState extends State<MapScreen> {
     if (_isLocationDataLoading == true) {
       // Show a loading indicator while waiting for user location
       return Center(
-        child: Lottie.asset("assets/animations/animation_lmpkib5u.json"),
+        child: lottie.Lottie.asset("assets/animations/animation_lmpkib5u.json"),
       );
     } else {
       return FlutterMap(
@@ -48,7 +48,22 @@ class _MapScreenState extends State<MapScreen> {
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             userAgentPackageName: 'com.example.app',
-          )
+          ),
+          MarkerLayer(
+            markers: [
+              Marker(
+                point:
+                    _userLatLng, // Sets the marker on the user's current location
+                width: 80,
+                height: 80,
+                builder: (context) => const Icon(
+                  Icons.my_location,
+                  size: 35.0,
+                  color: Colors.red,
+                ),
+              ),
+            ],
+          ),
         ],
       );
     }
