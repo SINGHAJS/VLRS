@@ -6,7 +6,7 @@ class GeolocationService {
   Position? _currentPosition;
   bool _isServicePermissionEnabled = false;
   final LatLng _defaultLatLng = const LatLng(36.8000, 175.1010);
-  late LocationPermission locationPermission;
+  late LocationPermission _locationPermission;
   var logger = Logger();
 
   /// Retrieves the current user's location.
@@ -31,12 +31,12 @@ class GeolocationService {
     }
 
     // Checks the user permissions
-    locationPermission = await Geolocator.checkPermission();
+    _locationPermission = await Geolocator.checkPermission();
 
     // Checks if the user has denied the location permission
-    if (locationPermission == LocationPermission.denied) {
+    if (_locationPermission == LocationPermission.denied) {
       // Requests the user for location permission
-      locationPermission = await Geolocator.requestPermission();
+      _locationPermission = await Geolocator.requestPermission();
     }
 
     // Sets the _currentPosition with the current location of the user
