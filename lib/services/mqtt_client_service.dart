@@ -10,8 +10,8 @@ class MQTTClientService {
   var logger = Logger();
 
   MQTTClientService(
-      String brokerURL, String clientId, String accessToken, int port) {
-    _client = MqttServerClient.withPort(brokerURL, clientId, port);
+      String hostname, String clientId, String accessToken, int port) {
+    _client = MqttServerClient.withPort(hostname, clientId, port);
 
     _clientId = clientId;
     _accessToken = accessToken;
