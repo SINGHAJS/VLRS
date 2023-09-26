@@ -19,7 +19,7 @@ class _MapScreenState extends State<MapScreen> {
   bool _isLocationDataLoading = true;
   bool _isMqttClientConnected = false;
 
-  final String _brokerURL = '43.226.218.94';
+  final String _hostname = '43.226.218.94';
   final String _clientId = 'bfa1ffb0-585a-11ee-8816-b3b2ecd2ae97';
   final int _port = 1883;
   final String _accessToken = 'TRB8zmWVjcJYFssMtGCX';
@@ -31,7 +31,7 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     _getUserLocation(); // Call the method to fetch the user's location
     _mqttClientService =
-        MQTTClientService(_brokerURL, _clientId, _accessToken, _port);
+        MQTTClientService(_hostname, _clientId, _accessToken, _port);
     _mqttClientService.establishConnection();
     // _establishClientConnection();
   }
@@ -74,6 +74,8 @@ class _MapScreenState extends State<MapScreen> {
         options: MapOptions(
           center: _userLatLng, // Use the current location as the center
           zoom: 18,
+          maxZoom: 18,
+          minZoom: 14,
         ),
         children: [
           TileLayer(
@@ -92,6 +94,26 @@ class _MapScreenState extends State<MapScreen> {
                   size: 35.0,
                   color: Colors.red,
                 ),
+              ),
+            ],
+          ),
+          CircleLayer(
+            circles: [
+              CircleMarker(
+                point: _userLatLng,
+                radius: 8,
+                useRadiusInMeter: true,
+                color: const Color.fromRGBO(255, 255, 255, 1),
+              ),
+            ],
+          ),
+          CircleLayer(
+            circles: [
+              CircleMarker(
+                point: _userLatLng,
+                radius: 6,
+                useRadiusInMeter: true,
+                color: const Color.fromRGBO(33, 150, 243, 1),
               ),
             ],
           ),
