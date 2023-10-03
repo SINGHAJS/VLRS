@@ -43,6 +43,8 @@ class _MapScreenState extends State<MapScreen> {
         options: MapOptions(
           center: _userLatLng, // Use the current location as the center
           zoom: 18,
+          maxZoom: 18,
+          minZoom: 14,
         ),
         children: [
           TileLayer(
