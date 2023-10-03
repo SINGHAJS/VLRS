@@ -64,6 +64,26 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ],
           ),
+          CircleLayer(
+            circles: [
+              CircleMarker(
+                point: _userLatLng,
+                radius: 8,
+                useRadiusInMeter: true,
+                color: const Color.fromRGBO(255, 255, 255, 1),
+              ),
+            ],
+          ),
+          CircleLayer(
+            circles: [
+              CircleMarker(
+                point: _userLatLng,
+                radius: 6,
+                useRadiusInMeter: true,
+                color: const Color.fromRGBO(33, 150, 243, 1),
+              ),
+            ],
+          ),
         ],
       );
     }
