@@ -24,9 +24,8 @@ class _MapScreenState extends State<MapScreen> {
 
   // Method to fetch and set the user's location
   Future<void> _getUserLocation() async {
-    final userLocation = await _geolocationService.getCurrentUserLocation();
+    _userLatLng = await _geolocationService.getCurrentUserLocation();
     setState(() {
-      _userLatLng = userLocation; // Set user's location
       _isLocationDataLoading = false; // Set the data loading to false
     });
   }
@@ -34,7 +33,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLocationDataLoading == true) {
-      // Show a loading indicator while waiting for user location
+      // Show a loading animation while waiting for user location
       return Center(
         child: lottie.Lottie.asset("assets/animations/animation_lmpkib5u.json"),
       );
@@ -42,14 +41,14 @@ class _MapScreenState extends State<MapScreen> {
       return FlutterMap(
         options: MapOptions(
           center: _userLatLng, // Use the current location as the center
-          zoom: 18,
-          maxZoom: 18,
-          minZoom: 14,
+          zoom: 18, // Default zoom level
+          maxZoom: 18, // Maximum zoom level
+          minZoom: 14, // Minimum zoom level
         ),
         children: [
+          // Sets the map layout
           TileLayer(
             urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.example.app',
           ),
           MarkerLayer(
             markers: [
@@ -69,6 +68,7 @@ class _MapScreenState extends State<MapScreen> {
           CircleLayer(
             circles: [
               CircleMarker(
+                // Set the outer circler for the marker of the user's location
                 point: _userLatLng,
                 radius: 8,
                 useRadiusInMeter: true,
@@ -77,6 +77,7 @@ class _MapScreenState extends State<MapScreen> {
             ],
           ),
           CircleLayer(
+            // Set the inner circle for the marker of the user's location
             circles: [
               CircleMarker(
                 point: _userLatLng,
