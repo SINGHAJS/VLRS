@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:vlrs/services/geolocation_service.dart';
 import 'package:lottie/lottie.dart' as lottie;
 import 'package:vlrs/services/mqtt_client_service.dart';
+import 'package:vlrs/services/mqtt_service.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -22,8 +23,9 @@ class _MapScreenState extends State<MapScreen> {
   final String _hostname = '43.226.218.94';
   final String _clientId = 'bfa1ffb0-585a-11ee-8816-b3b2ecd2ae97';
   final int _port = 1883;
-  final String _accessToken = 'TRB8zmWVjcJYFssMtGCX';
+  final String _accessToken = 'cngz9qqls7dk5zgi3y4j'; // bus a
   late MQTTClientService _mqttClientService;
+  late MqttService mqttService;
   final String _pubTopic = 'v1/devices/me/telemetry';
 
   @override
@@ -32,6 +34,7 @@ class _MapScreenState extends State<MapScreen> {
     _getUserLocation(); // Call the method to fetch the user's location
     _mqttClientService =
         MQTTClientService(_hostname, _clientId, _accessToken, _port);
+    mqttService = MqttService(_hostname, _clientId, _accessToken, _port);
     _mqttClientService.establishConnection();
     // _establishClientConnection();
   }
@@ -52,13 +55,13 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _establishClientConnection() async {
-    await _mqttClientService.establishConnection();
+    bool isMqttClientConnected = await mqttService.establishConnection();
     setState(() {
-      _isMqttClientConnected = true;
+      _isMqttClientConnected = isMqttClientConnected;
     });
 
     if (_isMqttClientConnected) {
-      // _mqttClientService.publishMessage(_pubTopic, "{flutter: ${303.00}}");
+      mqttService.subscribeToTopic(_pubTopic);
     }
   }
 

@@ -27,7 +27,7 @@ class MQTTClientService {
     _client.setProtocolV311();
   }
 
-  Future<void> establishConnection() async {
+  Future<bool> establishConnection() async {
     final connectMessage = MqttConnectMessage()
         .authenticateAs(_accessToken, '')
         .withClientIdentifier(_clientId)
@@ -44,14 +44,14 @@ class MQTTClientService {
       logger.e('Exception: $e');
       _client.disconnect();
     }
-
-    if (_client.connectionStatus!.state == MqttConnectionState.connected) {
-      logger.i('MQTT_LOGS::Mosquitto client connected');
-    } else {
-      logger.i(
-          'MQTT_LOGS::ERROR Mosquitto client connection failed - disconnecting, status is ${_client.connectionStatus}');
-      _client.disconnect();
-    }
+    return _client.connectionStatus!.state == MqttConnectionState.connected;
+    // if (_client.connectionStatus!.state == MqttConnectionState.connected) {
+    //   logger.i('MQTT_LOGS::Mosquitto client connected');
+    // } else {
+    //   logger.i(
+    //       'MQTT_LOGS::ERROR Mosquitto client connection failed - disconnecting, status is ${_client.connectionStatus}');
+    //   _client.disconnect();
+    // }
   }
 
   void terminateClientConnection() {
