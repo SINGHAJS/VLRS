@@ -7,6 +7,8 @@ import 'package:vlrs/services/geolocation_service.dart';
 
 // Animation
 import 'package:lottie/lottie.dart' as lottie;
+import 'package:vlrs/services/mqtt_client_service.dart';
+import 'package:vlrs/services/mqtt_service.dart';
 
 // Mqtt
 import 'package:vlrs/services/mqtt_service.dart';
@@ -101,6 +103,7 @@ class _MapScreenState extends State<MapScreen> {
           CircleLayer(
             circles: [
               CircleMarker(
+
                 // Set the outer circler for the marker of the user's location
                 point: _userLatLng,
                 radius: 8,
