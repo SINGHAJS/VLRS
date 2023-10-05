@@ -93,4 +93,18 @@ class MqttService {
   void _pong() {
     logger.i('MQTT_LOGS:: Ping response client callback invoked');
   }
+
+  void publishMessage(String topic, MqttQos qos, String message) {
+    final payloadBuilder = MqttClientPayloadBuilder();
+    // final b = Unit8Buffer();
+
+    try {
+      payloadBuilder.addString(message);
+      _client.publishMessage(topic, qos, payloadBuilder.payload!);
+      logger.i('MQTT_LOGS:: Publish message $message to topic $topic');
+    } catch (e) {
+      logger.e('Exception: $e');
+      terminateClientConnection();
+    }
+  }
 }
