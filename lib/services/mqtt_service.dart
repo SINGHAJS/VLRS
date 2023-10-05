@@ -2,18 +2,14 @@ import 'package:logger/logger.dart';
 
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:vlrs/constants/mqtt_constants.dart';
 
 class MqttService {
   late MqttServerClient _client;
-  late String _clientId;
-  late String _accessToken;
   var logger = Logger();
 
   MqttService(String hostname, String clientId, String accessToken, int port) {
     _client = MqttServerClient.withPort(hostname, clientId, port);
-
-    _clientId = clientId;
-    _accessToken = accessToken;
 
     _client.logging(on: true);
     _client.onConnected = _onConnected;
@@ -26,10 +22,19 @@ class MqttService {
     _client.setProtocolV311();
   }
 
+  /// Establishes a connection with the mqtt broker
+  ///
+  /// This function uses the [MqttConstants.ACCESS_TOKEN] and the [MqttConstants.CLIENT_ID]
+  /// to establish and authenticate the connection with the mqtt broker.
+  ///
+  /// If the client is connected to the mqtt broker succesfully, it will return true, otherwise
+  /// it will return false.
+  ///
+  /// Returns a boolean value indicating the connection state.
   Future<bool> establishConnection() async {
     final connectMessage = MqttConnectMessage()
-        .authenticateAs(_accessToken, '')
-        .withClientIdentifier(_clientId)
+        .authenticateAs(MqttConstants.ACCESS_TOKEN, '')
+        .withClientIdentifier(MqttConstants.CLIENT_ID)
         .startClean()
         .withWillQos(MqttQos.atLeastOnce);
 
@@ -55,67 +60,52 @@ class MqttService {
     }
   }
 
+  /// This function disconnects the client from the mqtt broker.
   void terminateClientConnection() {
     _client.disconnect();
   }
 
+  /// Logs a message when the client is conncted.
   void _onConnected() {
     logger.i('MQTT_LOGS:: Connected');
   }
 
+  /// Logs a message when the client is disconnected.
   void _onDisconnected() {
     logger.i('MQTT_LOGS:: Disconnected');
   }
 
+  /// Logs a message when the client subscribes to a topic.
   void _onSubscribed(String topic) {
     logger.i('MQTT_LOGS:: Subscribed topic: $topic');
   }
 
+  /// Logs a message when the client unsubscribes from a topic.
   void _onSubscribeFail(String topic) {
     logger.i('MQTT_LOGS:: Failed to subscribe $topic');
   }
 
+  /// Logs a message when the client unsubscribes from a topic.
   void _onUnsubscribed(String? topic) {
     logger.i('MQTT_LOGS:: Unsubscribed topic: $topic');
   }
 
+  /// Logs a message when the client recieves a ping.
   void _pong() {
     logger.i('MQTT_LOGS:: Ping response client callback invoked');
   }
 
-  void publishMessage(String topic, String data) {
-    final builder = MqttClientPayloadBuilder();
+  void publishMessage(String topic, MqttQos qos, String message) {
+    final payloadBuilder = MqttClientPayloadBuilder();
+    // final b = Unit8Buffer();
 
     try {
-      builder.addString(data);
-      _client.publishMessage(topic, MqttQos.atLeastOnce, builder.payload!);
+      payloadBuilder.addString(message);
+      _client.publishMessage(topic, qos, payloadBuilder.payload!);
+      logger.i('MQTT_LOGS:: Publish message $message to topic $topic');
     } catch (e) {
       logger.e('Exception: $e');
       terminateClientConnection();
     }
-  }
-
-  void subscribeToTopic(String topic) {
-    try {
-      logger.i('MQTT_LOGS:: Subscribing to the $topic topic');
-
-      _client.subscribe(topic, MqttQos.atLeastOnce);
-      _client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-        final MqttPublishMessage recMess = c[1].payload as MqttPublishMessage;
-        String payload =
-            MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-        logger.i(
-            "MQTTClient:: Message received from topic ${c[1].topic}, message = $payload");
-      });
-    } catch (e) {
-      logger.e('Exception: $e');
-      terminateClientConnection();
-    }
-  }
-
-  void onMessageReceived(String topic, String message) {
-    // Handle the received message here
-    logger.i('Received message on topic $topic: $message');
-    // You can process or store the message data as needed
   }
 }
