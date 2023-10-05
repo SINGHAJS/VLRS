@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
+
+// Geolocation and map
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:vlrs/services/geolocation_service.dart';
+
+// Animation
 import 'package:lottie/lottie.dart' as lottie;
+
+// Mqtt
+import 'package:vlrs/services/mqtt_service.dart';
+import 'package:vlrs/constants/mqtt_constants.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -12,14 +20,29 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  // Geolocation
   final GeolocationService _geolocationService = GeolocationService();
-  bool _isLocationDataLoading = true;
   late LatLng _userLatLng;
+
+  // Mqtt
+  late MqttService _mqttClientService;
+
+  // Flags
+  bool _isLocationDataLoading = true;
+  bool _isMqttClientConnected = false;
 
   @override
   void initState() {
     super.initState();
     _getUserLocation(); // Call the method to fetch the user's location
+
+    _mqttClientService = MqttService(
+        MqttConstants.HOSTNAME,
+        MqttConstants.CLIENT_ID,
+        MqttConstants.ACCESS_TOKEN,
+        MqttConstants.PORT); // Initialise the mqtt client service
+
+    _setUpMqttCommunication(); // Call the setup method to set up the mqtt communication
   }
 
   // Method to fetch and set the user's location
@@ -28,6 +51,16 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _isLocationDataLoading = false; // Set the data loading to false
     });
+  }
+
+  Future<void> _setUpMqttCommunication() async {
+    _isMqttClientConnected = await _mqttClientService.establishConnection();
+
+    if (_isMqttClientConnected) {
+      setState(() {
+        // Perform publish or subscription
+      });
+    }
   }
 
   @override
