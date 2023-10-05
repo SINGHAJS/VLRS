@@ -34,9 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
     };
     var data = jsonEncode(object);
 
+      channel.sink.add(data);
     channel.stream.listen((message) {
       print(message);
-      channel.sink.add(data.toString());
       setState(() {
         dataFromTelemetry = message.toString();
       });
@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     "entityType": "DEVICE",
                     "entityId": entityId,
                     "scope": "LATEST_TELEMETRY",
-                    "cmdId": 10
+                    "cmdId": 1
                   }
                 ],
                 "historyCmds": [],
