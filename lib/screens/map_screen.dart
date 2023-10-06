@@ -1,17 +1,25 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+
+// Geolocation and map
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:logger/logger.dart';
 import 'package:vlrs/model/telemetry.dart';
 import 'package:vlrs/services/geolocation_service.dart';
+
+// Animation
 import 'package:lottie/lottie.dart' as lottie;
-import 'package:vlrs/services/mqtt_client_service.dart';
-import 'package:vlrs/services/mqtt_service.dart';
+
+// Web Socket
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../config/constants.dart';
+
+// Mqtt
+import 'package:vlrs/services/mqtt_service.dart';
+import 'package:vlrs/constants/mqtt_constants.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -21,19 +29,17 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  // Geolocation
   final GeolocationService _geolocationService = GeolocationService();
   late LatLng _userLatLng;
 
+  // Mqtt
+  late MqttService _mqttClientService;
+
+  // Flags
   bool _isLocationDataLoading = true;
   bool _isMqttClientConnected = false;
 
-  final String _hostname = '43.226.218.94';
-  final String _clientId = 'bfa1ffb0-585a-11ee-8816-b3b2ecd2ae97';
-  final int _port = 1883;
-  final String _accessToken = 'cngz9qqls7dk5zgi3y4j'; // bus a
-  late MQTTClientService _mqttClientService;
-  late MqttService mqttService;
-  final String _pubTopic = 'v1/devices/me/telemetry';
   final _telemetryStream = WebSocketChannel.connect(Uri.parse(
       "ws://43.226.218.94:8080/api/ws/plugins/telemetry?token=eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ0ZW5hbnRAdGhpbmdzYm9hcmQub3JnIiwidXNlcklkIjoiNDEwYTJkYjAtNDE5Ni0xMWVlLTk2OWQtNWIyNDI0YTlhM2FkIiwic2NvcGVzIjpbIlRFTkFOVF9BRE1JTiJdLCJzZXNzaW9uSWQiOiIwYmNmZDFkMC0wNGVlLTRiZjItOTVjYi1jZGYxZjRiNTAyYWIiLCJpc3MiOiJ0aGluZ3Nib2FyZC5pbyIsImlhdCI6MTY5NjUxOTAzOCwiZXhwIjoxNjk2NTI4MDM4LCJlbmFibGVkIjp0cnVlLCJpc1B1YmxpYyI6ZmFsc2UsInRlbmFudElkIjoiM2ZmYzQwMjAtNDE5Ni0xMWVlLTk2OWQtNWIyNDI0YTlhM2FkIiwiY3VzdG9tZXJJZCI6IjEzODE0MDAwLTFkZDItMTFiMi04MDgwLTgwODA4MDgwODA4MCJ9.QtqI9gMyqASoL9rGbnTPy1QhhpxqcON7dAikWvHpKoj8lOGf6IEM31QAi1hJhYBY2e492IDgde1E90ADBTItzg"));
 
@@ -59,28 +65,34 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     _gettelemetryStream();
     _getUserLocation(); // Call the method to fetch the user's location
-    _mqttClientService =
-        MQTTClientService(_hostname, _clientId, _accessToken, _port);
-    mqttService = MqttService(_hostname, _clientId, _accessToken, _port);
-    _mqttClientService.establishConnection();
-    // _establishClientConnection();
-  }
 
-  @override
-  void dispose() {
-    _mqttClientService.terminateClientConnection();
-    super.dispose();
+    _mqttClientService = MqttService(
+        MqttConstants.HOSTNAME,
+        MqttConstants.CLIENT_ID,
+        MqttConstants.ACCESS_TOKEN,
+        MqttConstants.PORT); // Initialise the mqtt client service
+
+    _setUpMqttCommunication(); // Call the setup method to set up the mqtt communication
   }
 
   // Method to fetch and set the user's location
   Future<void> _getUserLocation() async {
-    final userLocation = await _geolocationService.getCurrentUserLocation();
+    _userLatLng = await _geolocationService.getCurrentUserLocation();
     setState(() {
-      _userLatLng = userLocation; // Set user's location
       _isLocationDataLoading = false; // Set the data loading to false
     });
   }
 
+    Future<void> _setUpMqttCommunication() async {
+    _isMqttClientConnected = await _mqttClientService.establishConnection();
+
+    if (_isMqttClientConnected) {
+      setState(() {
+        // Perform publish or subscription
+      });
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,7 +119,7 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
       body: _isLocationDataLoading == true ?
-      // Show a loading indicator while waiting for user location
+      // Show a loading indicator while waiting for user and other devices location
       Center(
         child: lottie.Lottie.asset("assets/animations/animation_lmpkib5u.json"),
       ): StreamBuilder(
@@ -139,17 +151,18 @@ class _MapScreenState extends State<MapScreen> {
           print("Longitude" + stringLng);
           return FlutterMap(
             options: MapOptions(
-              center: LatLng(lat, lng), // Use the current location as the center
-              zoom: 18,
-              maxZoom: 18,
-              minZoom: 14,
+              center: _userLatLng, // Use the current location as the center
+              zoom: 18, // Default zoom level
+              maxZoom: 18, // Maximum zoom level
+              minZoom: 14, // Minimum zoom level
             ),
             children: [
+              // Sets the map layout
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.app',
+                userAgentPackageName: 'com.vlrs.app',
               ),
-              MarkerLayer(
+               MarkerLayer(
                 markers: [
                   Marker(
                     point: LatLng(lat, lng), // Sets the marker on the user's current location
@@ -163,9 +176,25 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ],
               ),
+              MarkerLayer(
+                markers: [
+                  Marker(
+                    point:
+                    _userLatLng, // Sets the marker on the user's current location
+                    width: 80,
+                    height: 80,
+                    builder: (context) => const Icon(
+                      Icons.my_location,
+                      size: 35.0,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
               CircleLayer(
                 circles: [
                   CircleMarker(
+                    // Set the outer circler for the marker of the user's location
                     point: _userLatLng,
                     radius: 8,
                     useRadiusInMeter: true,
@@ -176,6 +205,7 @@ class _MapScreenState extends State<MapScreen> {
               CircleLayer(
                 circles: [
                   CircleMarker(
+                    // Set the inner circle for the marker of the user's location
                     point: _userLatLng,
                     radius: 6,
                     useRadiusInMeter: true,
