@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vlrs/screens/home_screen.dart';
 import './screens/map_screen.dart';
 
 void main() {
@@ -16,12 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('First App'),
-        ),
-        body: const HomeScreen(),
-      ),
+      home:  const MapScreen(),
     );
   }
 }
