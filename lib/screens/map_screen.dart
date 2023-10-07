@@ -1,9 +1,11 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 // Geolocation and map
 import 'package:flutter_map/flutter_map.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:logger/logger.dart';
 import 'package:vlrs/services/geolocation_service.dart';
@@ -38,6 +40,7 @@ class _MapScreenState extends State<MapScreen> {
   // Mqtt
   late MqttService _mqttClientService;
   late MapController _mapController;
+  final box = Hive.box('vlrs');
 
   // Flags
   bool _isLocationDataLoading = true;
@@ -61,6 +64,14 @@ class _MapScreenState extends State<MapScreen> {
     };
     var data = jsonEncode(object);
     _telemetryStream.sink.add(data);
+  }
+
+  void _checkJwtToken() {
+    var jwtToken = box.get('jwtToken');
+    final dio = Dio();
+    if (jwtToken == null) {
+      var result   =dio.post("http://43.226.218.94:8080/api/auth/login");
+    }
   }
 
   @override
