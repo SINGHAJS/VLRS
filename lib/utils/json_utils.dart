@@ -22,4 +22,11 @@ class JsonUtils {
 
     return latLngs;
   }
+
+  void extractTelemetryData(dynamic snapshotData) {
+    var json = jsonDecode(snapshotData);
+    var data = json['data'];
+    var stringLat = data["latitude"][0][1];
+    var stringLng = data["longitude"][0][1];
+  }
 }
