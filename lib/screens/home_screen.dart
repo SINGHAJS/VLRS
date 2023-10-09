@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     };
     var data = jsonEncode(object);
 
-      channel.sink.add(data);
+    channel.sink.add(data);
     channel.stream.listen((message) {
       print(message);
       setState(() {
