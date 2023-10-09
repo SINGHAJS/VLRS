@@ -155,13 +155,6 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  // move map center based on lat and lng
-  void moveMapCenter(double lat, double lng) {
-    Future.delayed(const Duration(seconds: 3), () {
-      _mapController!.move(LatLng(lat, lng), 18);
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -211,18 +204,17 @@ class _MapScreenState extends State<MapScreen> {
           var lat = double.parse(stringLat);
           var lng = double.parse(stringLng);
 
-          // move map center based on lat and lng
-          moveMapCenter(lat, lng);
-
           // return flutter map widget to display map
           return FlutterMap(
             mapController: _mapController,
             options: MapOptions(
-              center: LatLng(lat, lng),
-              zoom: 14,
-              maxZoom: 18,
-              minZoom: 14,
-            ),
+                center: LatLng(lat, lng),
+                zoom: 14,
+                maxZoom: 18,
+                minZoom: 14,
+                onMapReady: () {
+                  _mapController!.move(LatLng(lat, lng), 18);
+                }),
             children: [
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
