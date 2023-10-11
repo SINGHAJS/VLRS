@@ -7,7 +7,6 @@ import 'package:vlrs/services/geolocation_service.dart';
 import 'package:logger/logger.dart';
 import 'package:vlrs/services/websocket_service.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
-import 'package:vlrs/ui/error_ui.dart';
 import 'package:vlrs/ui/map_ui.dart';
 
 class MapScreen extends StatefulWidget {
@@ -79,9 +78,6 @@ class _MapScreenState extends State<MapScreen> {
         speed: double.parse(data["speed"][0][1]));
   }
 
-// LatLng(_publisherTelemetry.latitude,
-//   _publisherTelemetry.longitude)
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +93,8 @@ class _MapScreenState extends State<MapScreen> {
             updatePublisherTelemetryModel(snapshot.data);
             return FlutterMap(
               options: MapOptions(
-                center: _userLatLng,
+                center: LatLng(_publisherTelemetry.latitude,
+                    _publisherTelemetry.longitude),
                 zoom: 17, // Default Zoom
                 maxZoom: 17, // Max Zoom
                 minZoom: 14, // Min Zoom
@@ -107,7 +104,14 @@ class _MapScreenState extends State<MapScreen> {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.vlrs.app',
                 ),
-                _mapUI.showUserMarkerOnMapUI(_userLatLng),
+                MarkerLayer(
+                  markers: [
+                    _mapUI.showUserMarkerOnMapUI(_userLatLng),
+                    _mapUI.showPublisherDeviceMarkerOnMap(LatLng(
+                        _publisherTelemetry.latitude,
+                        _publisherTelemetry.longitude))
+                  ],
+                ),
                 _mapUI.showUserCircleLayerOnMapUI(_userLatLng),
               ],
             );

@@ -23,25 +23,21 @@ class MapUI {
   }
 
   ///
-  /// This function returns a marker layer for the user's current location.
+  /// This function returns a marker for the user's current location.
   /// Param: [userLatLng], lat and long of user's location.
   ///
-  /// Return: Widget, MarkerLayer.
+  /// Return: Widget, Marker.
   ///
-  Widget showUserMarkerOnMapUI(LatLng userLatLng) {
-    return MarkerLayer(
-      markers: [
-        Marker(
-          point: userLatLng,
-          width: 80,
-          height: 80,
-          builder: (context) => const Icon(
-            Icons.my_location,
-            size: 35.0,
-            color: Colors.red,
-          ),
-        ),
-      ],
+  Marker showUserMarkerOnMapUI(LatLng userLatLng) {
+    return Marker(
+      point: userLatLng,
+      width: 80,
+      height: 80,
+      builder: (context) => const Icon(
+        Icons.my_location,
+        size: 35.0,
+        color: Colors.red,
+      ),
     );
   }
 
@@ -67,6 +63,21 @@ class MapUI {
           color: const Color.fromRGBO(33, 150, 243, 1),
         ),
       ],
+    );
+  }
+
+  ///
+  /// This function returns a marker for the publisher device's current location.
+  /// Param: [publisherDeviceLatLng], lat and long of publisher device's location.
+  ///
+  /// Return: Widget, Marker.
+  ///
+  Marker showPublisherDeviceMarkerOnMap(LatLng publisherDeviceLatLng) {
+    return Marker(
+      point: publisherDeviceLatLng,
+      width: 80,
+      height: 80,
+      builder: (context) => Image.asset('assets/images/map_screen/bus.png'),
     );
   }
 }
