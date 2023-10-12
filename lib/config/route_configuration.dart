@@ -12,6 +12,18 @@ final GoRouter router = GoRouter(
           return const MapScreen();
         }),
     GoRoute(
+        path: '/message',
+        name: 'Message',
+        builder: (BuildContext context, GoRouterState state) {
+          return const MapScreen();
+        }),
+    GoRoute(
+        path: '/settings',
+        name: 'Settings',
+        builder: (BuildContext context, GoRouterState state) {
+          return const MapScreen();
+        }),
+    GoRoute(
         path: '/',
         name: 'Splash Screen',
         builder: (BuildContext context, GoRouterState state) {
