@@ -8,6 +8,7 @@ import 'package:vlrs/services/websocket_service.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
 import 'package:vlrs/ui/map_ui.dart';
 import 'package:vlrs/ui/loading_ui.dart';
+import 'package:vlrs/ui/navigation_ui.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -36,6 +37,7 @@ class _MapScreenState extends State<MapScreen> {
   // UI
   final MapUI _mapUI = MapUI();
   final LoadingUI _loadingUI = LoadingUI();
+  final NavigationUI _navigationUI = NavigationUI();
 
   @override
   void initState() {
@@ -88,31 +90,35 @@ class _MapScreenState extends State<MapScreen> {
             return _loadingUI.displayMapLoadingAnimation();
           } else {
             updatePublisherTelemetryModel(snapshot.data);
-            return FlutterMap(
-              options: MapOptions(
-                center: LatLng(_publisherTelemetry.latitude,
-                    _publisherTelemetry.longitude),
-                zoom: 17, // Default Zoom
-                maxZoom: 17, // Max Zoom
-                minZoom: 14, // Min Zoom
+            return Stack(children: <Widget>[
+              FlutterMap(
+                options: MapOptions(
+                  center: LatLng(_publisherTelemetry.latitude,
+                      _publisherTelemetry.longitude),
+                  zoom: 17, // Default Zoom
+                  maxZoom: 17, // Max Zoom
+                  minZoom: 14, // Min Zoom
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.vlrs.app',
+                  ),
+                  MarkerLayer(
+                    markers: [
+                      _mapUI.showUserMarkerOnMapUI(_userLatLng),
+                      _mapUI.showPublisherDeviceMarkerOnMap(
+                          LatLng(_publisherTelemetry.latitude,
+                              _publisherTelemetry.longitude),
+                          _publisherTelemetry.bearing)
+                    ],
+                  ),
+                  _mapUI.showUserCircleLayerOnMapUI(_userLatLng),
+                ],
               ),
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.vlrs.app',
-                ),
-                MarkerLayer(
-                  markers: [
-                    _mapUI.showUserMarkerOnMapUI(_userLatLng),
-                    _mapUI.showPublisherDeviceMarkerOnMap(
-                        LatLng(_publisherTelemetry.latitude,
-                            _publisherTelemetry.longitude),
-                        _publisherTelemetry.bearing)
-                  ],
-                ),
-                _mapUI.showUserCircleLayerOnMapUI(_userLatLng),
-              ],
-            );
+              _navigationUI.showNavigationBar(context),
+            ]);
           }
         },
       ),
