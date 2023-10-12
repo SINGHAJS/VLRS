@@ -5,6 +5,7 @@ import 'package:vlrs/ui/error_ui.dart';
 
 class MapUI {
   late final ErrorUI _errorUI = ErrorUI();
+  final String busImagePath = 'assets/images/map_screen/bus.png';
 
   ///
   /// This function is used to validate if the map widget is ready.
@@ -69,15 +70,23 @@ class MapUI {
   ///
   /// This function returns a marker for the publisher device's current location.
   /// Param: [publisherDeviceLatLng], lat and long of publisher device's location.
+  /// Param: [bearing], bearing data of the publisher device to point the bus
+  ///        to that direction.
   ///
   /// Return: Widget, Marker.
   ///
-  Marker showPublisherDeviceMarkerOnMap(LatLng publisherDeviceLatLng) {
+  Marker showPublisherDeviceMarkerOnMap(
+      LatLng publisherDeviceLatLng, double bearing) {
+    double busDirection = (90 - bearing) * (3.1415926535 / 180);
+
     return Marker(
       point: publisherDeviceLatLng,
       width: 80,
       height: 80,
-      builder: (context) => Image.asset('assets/images/map_screen/bus.png'),
+      builder: (context) => Transform.rotate(
+        angle: busDirection,
+        child: Image.asset(busImagePath),
+      ),
     );
   }
 }

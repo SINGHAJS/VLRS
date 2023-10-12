@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:lottie/lottie.dart' as lottie;
 import 'package:vlrs/services/geolocation_service.dart';
 import 'package:logger/logger.dart';
 import 'package:vlrs/services/websocket_service.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
 import 'package:vlrs/ui/map_ui.dart';
+import 'package:vlrs/ui/loading_ui.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -34,12 +34,12 @@ class _MapScreenState extends State<MapScreen> {
   late PublisherTelemetry _publisherTelemetry;
 
   // UI
-  late final MapUI _mapUI;
+  final MapUI _mapUI = MapUI();
+  final LoadingUI _loadingUI = LoadingUI();
 
   @override
   void initState() {
     super.initState();
-    _mapUI = MapUI();
     _getUserLocation();
     _webSocketService.validateToken();
   }
@@ -85,10 +85,7 @@ class _MapScreenState extends State<MapScreen> {
         stream: _webSocketService.telemetryStream().stream,
         builder: (context, snapshot) {
           if (!_mapUI.isMapWidgetReady(snapshot, _isUserLocationAttained)) {
-            return Center(
-              child: lottie.Lottie.asset(
-                  "assets/animations/animation_lmpkib5u.json"),
-            );
+            return _loadingUI.displayMapLoadingAnimation();
           } else {
             updatePublisherTelemetryModel(snapshot.data);
             return FlutterMap(
@@ -107,9 +104,10 @@ class _MapScreenState extends State<MapScreen> {
                 MarkerLayer(
                   markers: [
                     _mapUI.showUserMarkerOnMapUI(_userLatLng),
-                    _mapUI.showPublisherDeviceMarkerOnMap(LatLng(
-                        _publisherTelemetry.latitude,
-                        _publisherTelemetry.longitude))
+                    _mapUI.showPublisherDeviceMarkerOnMap(
+                        LatLng(_publisherTelemetry.latitude,
+                            _publisherTelemetry.longitude),
+                        _publisherTelemetry.bearing)
                   ],
                 ),
                 _mapUI.showUserCircleLayerOnMapUI(_userLatLng),
