@@ -2,13 +2,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:lottie/lottie.dart' as lottie;
 import 'package:vlrs/services/geolocation_service.dart';
-
 import 'package:logger/logger.dart';
-
 import 'package:vlrs/services/websocket_service.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
+import 'package:vlrs/ui/map_ui.dart';
+import 'package:vlrs/ui/loading_ui.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -33,6 +32,10 @@ class _MapScreenState extends State<MapScreen> {
 
   // Models
   late PublisherTelemetry _publisherTelemetry;
+
+  // UI
+  final MapUI _mapUI = MapUI();
+  final LoadingUI _loadingUI = LoadingUI();
 
   @override
   void initState() {
@@ -75,41 +78,20 @@ class _MapScreenState extends State<MapScreen> {
         speed: double.parse(data["speed"][0][1]));
   }
 
-  ///
-  /// This function is used to validate if the map widget is ready.
-  ///
-  /// Return: Boolean, true if ready, false if not.
-  ///
-  bool isMapWidgetReady(AsyncSnapshot snapshot) {
-    if (snapshot.connectionState == ConnectionState.waiting ||
-        snapshot.hasData == false) return false;
-
-    if (_isUserLocationAttained == false) return false;
-
-    if (snapshot.hasError) showErrorMessage();
-
-    return true;
-  }
-
-// LatLng(_publisherTelemetry.latitude,
-//   _publisherTelemetry.longitude)
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder(
         stream: _webSocketService.telemetryStream().stream,
         builder: (context, snapshot) {
-          if (!isMapWidgetReady(snapshot)) {
-            return Center(
-              child: lottie.Lottie.asset(
-                  "assets/animations/animation_lmpkib5u.json"),
-            );
+          if (!_mapUI.isMapWidgetReady(snapshot, _isUserLocationAttained)) {
+            return _loadingUI.displayMapLoadingAnimation();
           } else {
             updatePublisherTelemetryModel(snapshot.data);
             return FlutterMap(
               options: MapOptions(
-                center: _userLatLng,
+                center: LatLng(_publisherTelemetry.latitude,
+                    _publisherTelemetry.longitude),
                 zoom: 17, // Default Zoom
                 maxZoom: 17, // Max Zoom
                 minZoom: 14, // Min Zoom
@@ -119,70 +101,21 @@ class _MapScreenState extends State<MapScreen> {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.vlrs.app',
                 ),
-                showUserMarkerOnMapUI(),
-                showUserCircleLayerOnMapUI(),
+                MarkerLayer(
+                  markers: [
+                    _mapUI.showUserMarkerOnMapUI(_userLatLng),
+                    _mapUI.showPublisherDeviceMarkerOnMap(
+                        LatLng(_publisherTelemetry.latitude,
+                            _publisherTelemetry.longitude),
+                        _publisherTelemetry.bearing)
+                  ],
+                ),
+                _mapUI.showUserCircleLayerOnMapUI(_userLatLng),
               ],
             );
           }
         },
       ),
-    );
-  }
-
-  ///
-  /// This function returns a center with an error message.
-  ///
-  /// Return: Widget, center
-  ///
-  Widget showErrorMessage() {
-    return const Center(
-      child: Text("Error"),
-    );
-  }
-
-  ///
-  /// This function returns a marker layer for the user's current location.
-  ///
-  /// Return: Widget, MarkerLayer.
-  ///
-  Widget showUserMarkerOnMapUI() {
-    return MarkerLayer(
-      markers: [
-        Marker(
-          point: _userLatLng,
-          width: 80,
-          height: 80,
-          builder: (context) => const Icon(
-            Icons.my_location,
-            size: 35.0,
-            color: Colors.red,
-          ),
-        ),
-      ],
-    );
-  }
-
-  ///
-  /// This function returns circular layer for the user's current location.
-  ///
-  /// Return: Widget, CircularLayer.
-  ///
-  Widget showUserCircleLayerOnMapUI() {
-    return CircleLayer(
-      circles: [
-        CircleMarker(
-          point: _userLatLng,
-          radius: 18,
-          useRadiusInMeter: true,
-          color: const Color.fromRGBO(255, 255, 255, 1),
-        ),
-        CircleMarker(
-          point: _userLatLng,
-          radius: 14,
-          useRadiusInMeter: true,
-          color: const Color.fromRGBO(33, 150, 243, 1),
-        ),
-      ],
     );
   }
 }
