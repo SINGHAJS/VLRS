@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:vlrs/constants/app_colours.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -13,13 +14,7 @@ class SplashScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF87CEEB), Color(0xFF6A5ACD)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+          color: AppColours.BACKGROUND_PRIMARY_COLOUR,
           width: double.infinity, // Take up full width
           height: double.infinity, // Take up full height
           child: Column(
@@ -39,16 +34,16 @@ class SplashScreen extends StatelessWidget {
                   Text(
                     'WELCOME TO VLRS!',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: AppColours.ACCENT_COLOUR,
                       fontSize: 28.0,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    'Vehicle Location Reporting System',
+                    'VEHICLE LOCATION REPORTING SYSTEM',
                     style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
+                      color: AppColours.TEXT_PRIMARY_COLOR,
+                      fontSize: 16.0,
                     ),
                   ),
                 ],
@@ -59,13 +54,12 @@ class SplashScreen extends StatelessWidget {
                 child: ElevatedButton(
                   onPressed: onContinueClickHandler,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.white, // Set the background color to white
+                    backgroundColor: AppColours.ACCENT_COLOUR,
                   ),
                   child: const Text(
-                    'Continue',
+                    'CONTINUE',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: AppColours.TEXT_PRIMARY_COLOR,
                     ),
                   ),
                 ),
