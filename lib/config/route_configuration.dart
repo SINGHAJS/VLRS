@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:vlrs/screens/map_screen.dart';
+import 'package:vlrs/screens/message_setup_screen.dart';
 import 'package:vlrs/screens/splash_screen.dart';
 
 final GoRouter router = GoRouter(
@@ -10,6 +11,12 @@ final GoRouter router = GoRouter(
         name: 'Map',
         builder: (BuildContext context, GoRouterState state) {
           return const MapScreen();
+        }),
+    GoRoute(
+        path: '/message-setup',
+        name: 'Message Setup',
+        builder: (BuildContext context, GoRouterState state) {
+          return const MessageSetupScreen();
         }),
     GoRoute(
         path: '/message',
