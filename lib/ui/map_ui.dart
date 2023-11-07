@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:vlrs/ui/error_ui.dart';
+import 'package:vlrs/model/publisher_telemetry.dart';
 
 class MapUI {
   late final ErrorUI _errorUI = ErrorUI();
@@ -89,4 +90,38 @@ class MapUI {
       ),
     );
   }
+
+  ///
+  /// This function returns a marker for the publisher device's current location
+  /// given in the list.
+  /// Param: [telemetryDevices], the list of telemetry devices
+  ///
+  /// Return: Widget, Marker.
+  ///
+  // Marker showPublisherDeviceMarkerOnMap(
+  //     List<PublisherTelemetry> telemetryDevices) {
+  //   if (telemetryDevices.isNotEmpty) {
+  //     for (PublisherTelemetry telemetryDevice in telemetryDevices) {
+  //       double busDirection =
+  //           (90 - telemetryDevice.bearing) * (3.1415926535 / 180);
+
+  //       return Marker(
+  //         point: LatLng(telemetryDevice.latitude, telemetryDevice.longitude),
+  //         width: 80,
+  //         height: 80,
+  //         builder: (context) => Transform.rotate(
+  //           angle: busDirection,
+  //           child: Image.asset(busImagePath),
+  //         ),
+  //       );
+  //     }
+  //   }
+
+  //   return Marker(
+  //     point: const LatLng(-36.785334, 175.023230),
+  //     width: 80,
+  //     height: 80,
+  //     builder: (context) => Image.asset(busImagePath),
+  //   );
+  // }
 }
