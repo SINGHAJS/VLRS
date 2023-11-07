@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:vlrs/model/bus_stop.dart';
 import 'package:vlrs/services/geolocation_service.dart';
 import 'package:logger/logger.dart';
 import 'package:vlrs/services/websocket_service.dart';
@@ -35,6 +36,7 @@ class _MapScreenState extends State<MapScreen> {
   final JsonUtils _jsonUtils = JsonUtils();
   late List<LatLng> _mapRouteToData;
   late List<LatLng> _mapRouteFromData;
+  late List<BusStop> _mapBusStopData;
 
   // WebSocket
   final WebSocketService _webSocketService = WebSocketService();
@@ -47,12 +49,17 @@ class _MapScreenState extends State<MapScreen> {
       'assets/coordinates/RouteCoordinatesTo.json';
   final String _routeCoordinatesFromPath =
       'assets/coordinates/RouteCoordinatesFrom.json';
+  final String _busStopCoordinatesFile =
+      'assets/coordinates/BusStopCoordinates.json';
 
   // UI
   final MapUI _mapUI = MapUI();
   final LoadingUI _loadingUI = LoadingUI();
   final NavigationUI _navigationUI = NavigationUI();
   final MapRouteUI _mapRouteUI = MapRouteUI();
+
+  // Lists
+  final List<PublisherTelemetry> _telemetryDevices = [];
 
   @override
   void initState() {
@@ -77,6 +84,8 @@ class _MapScreenState extends State<MapScreen> {
         await _jsonUtils.readLatLngFromJson(_routeCoordinatesToPath);
     _mapRouteFromData =
         await _jsonUtils.readLatLngFromJson(_routeCoordinatesFromPath);
+    _mapBusStopData =
+        await _jsonUtils.readBusStopDataFromJson(_busStopCoordinatesFile);
     setState(() {
       _isRouteDataReceived = true;
     });
@@ -102,12 +111,19 @@ class _MapScreenState extends State<MapScreen> {
   void updatePublisherTelemetryModel(String dataSnapshot) {
     final json = jsonDecode(dataSnapshot);
     final data = json['data'];
+
+    // Note: Need to add an 'id' or 'name' attribute to the dat to
+    // distinguish between the devices.
     _publisherTelemetry = PublisherTelemetry(
         bearing: double.parse(data["bearing"][0][1]),
         direction: data["direction"][0][1],
         latitude: double.parse(data["latitude"][0][1]),
         longitude: double.parse(data["longitude"][0][1]),
         speed: double.parse(data["speed"][0][1]));
+
+    // This list can be passed on to other functions to iterate over this
+    // list and show the devices on the map accordingly.
+    // _telemetryDevices.add(_publisherTelemetry);
   }
 
   @override
@@ -145,15 +161,18 @@ class _MapScreenState extends State<MapScreen> {
                           LatLng(_publisherTelemetry.latitude,
                               _publisherTelemetry.longitude),
                           _publisherTelemetry.bearing)
+                      // Note: This is to be used to display multiple devices on the map.
+                      // _mapUI.showPublisherDeviceMarkerOnMap(_telemetryDevices),
                     ],
                   ),
                   _mapUI.showUserCircleLayerOnMapUI(_userLatLng),
                   _mapRouteUI.drawVehicleRoute(_mapRouteToData, Colors.blue),
                   _mapRouteUI.drawVehicleRoute(_mapRouteFromData, Colors.blue),
+                  _mapRouteUI.displayBusStopOnMap(
+                      _mapBusStopData, _publisherTelemetry),
                 ],
               ),
               // _navigationUI.showNavigationBar(context),
-              // _mapRouteUI.drawVehicleRoute(),
             ]);
           }
         },
