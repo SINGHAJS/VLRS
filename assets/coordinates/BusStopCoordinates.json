@@ -1,0 +1,99 @@
+{
+  "1": [
+    {
+      "latitude": -36.78012,
+      "longitude": 174.99216,
+      "bus-stop-name": "Bus A"
+    },
+    {
+      "latitude": -36.78139,
+      "longitude": 175.007,
+      "bus-stop-name": "Bus Stop 1"
+    },
+    {
+      "latitude": -36.78338,
+      "longitude": 175.01086,
+      "bus-stop-name": "Bus Stop 2"
+    },
+    {
+      "latitude": -36.79883,
+      "longitude": 175.03447,
+      "bus-stop-name": "Bus Stop 3"
+    },
+    {
+      "latitude": -36.79589,
+      "longitude": 175.04737,
+      "bus-stop-name": "Bus Stop 4"
+    },
+    {
+      "latitude": -36.80141,
+      "longitude": 175.06579,
+      "bus-stop-name": "Bus Stop 5"
+    },
+    {
+      "latitude": -36.80106,
+      "longitude": 175.06972,
+      "bus-stop-name": "Bus Stop 9"
+    },
+    {
+      "latitude": -36.79887,
+      "longitude": 175.07527,
+      "bus-stop-name": "Bus Stop 7"
+    },
+    {
+      "latitude": -36.78842,
+      "longitude": 175.08309,
+      "bus-stop-name": "Bus Stop 8"
+    },
+    {
+      "latitude": -36.8011,
+      "longitude": 175.06984,
+      "bus-stop-name": "Bus Stop 6"
+    },
+    {
+      "latitude": -36.80149,
+      "longitude": 175.06619,
+      "bus-stop-name": "Bus Stop 10"
+    },
+    {
+      "latitude": -36.81456,
+      "longitude": 175.08249,
+      "bus-stop-name": "Bus Stop 11"
+    },
+    {
+      "latitude": -36.80916,
+      "longitude": 175.06174,
+      "bus-stop-name": "Bus Stop 12"
+    },
+    {
+      "latitude": -36.79601,
+      "longitude": 175.04829,
+      "bus-stop-name": "Bus Stop 13"
+    },
+    {
+      "latitude": -36.79689,
+      "longitude": 175.03242,
+      "bus-stop-name": "Bus Stop 14"
+    },
+    {
+      "latitude": -36.78365,
+      "longitude": 175.01139,
+      "bus-stop-name": "Bus Stop 15"
+    },
+    {
+      "latitude": -36.79159,
+      "longitude": 174.99938,
+      "bus-stop-name": "Bus Stop 16"
+    },
+    {
+      "latitude": -36.78724,
+      "longitude": 175.00125,
+      "bus-stop-name": "Bus Stop 17"
+    },
+    {
+      "latitude": -36.78012,
+      "longitude": 174.99216,
+      "bus-stop-name": "START/END"
+    }
+  ]
+}
