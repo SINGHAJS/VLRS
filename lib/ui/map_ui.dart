@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:vlrs/constants/constants.dart';
 import 'package:vlrs/ui/error_ui.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
 
@@ -78,7 +79,8 @@ class MapUI {
   ///
   Marker showPublisherDeviceMarkerOnMap(
       LatLng publisherDeviceLatLng, double bearing) {
-    double busDirection = (90 - bearing) * (3.1415926535 / 180);
+    // double busDirection = (90 - bearing) * (3.1415926535 / 180);
+    double busDirection = (90 - bearing) * (Constants.PI / 180);
 
     return Marker(
       point: publisherDeviceLatLng,
