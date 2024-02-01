@@ -112,7 +112,7 @@ class _MapScreenState extends State<MapScreen> {
     final json = jsonDecode(dataSnapshot);
     final data = json['data'];
 
-    // Note: Need to add an 'id' or 'name' attribute to the dat to
+    // Note: Need to add an 'id' or 'name' attribute to the data to
     // distinguish between the devices.
     _publisherTelemetry = PublisherTelemetry(
         bearing: double.parse(data["bearing"][0][1]),
