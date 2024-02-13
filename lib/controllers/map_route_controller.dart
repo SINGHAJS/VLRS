@@ -117,4 +117,89 @@ class MapRouteController {
     }
     return '0$n';
   }
+
+  ///
+  /// <<< Helper Function >>>
+  /// This function is a helper function used by the [onBusStopMarkerHandlerAdvanced]
+  /// function to calculate distance between two points, ETA, and show display it
+  /// on the screen.
+  /// Param: [busStop], the bus stop object that will display the information.
+  /// Param: [publisherTelemetry], list of publisher device objects.
+  ///
+  /// Return List<Container>, container with ETA information.
+  ///
+  List<Container> _deviceETAContainer(
+      BusStop busStop, List<PublisherTelemetry> publisherTelemetry) {
+    final Geodesy geodesy = Geodesy();
+
+    List<Container> containerETAList = [];
+
+    for (PublisherTelemetry publisherTelemetry in publisherTelemetry) {
+      num distance = geodesy.distanceBetweenTwoGeoPoints(
+          LatLng(busStop.latitude, busStop.longitude),
+          LatLng(publisherTelemetry.latitude, publisherTelemetry.longitude));
+
+      double distanceInKm = distance / 1000;
+      double estimateArrivalTime = (distanceInKm /
+          (publisherTelemetry.speed < 0 ? publisherTelemetry.speed : 50));
+
+      containerETAList.add(Container(
+        width: 300,
+        padding: const EdgeInsets.all(4.0),
+        decoration: BoxDecoration(
+          color: AppColours.BACKGROUND_PRIMARY_COLOUR,
+          // borderRadius: BorderRadius.circular(20.0),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.directions_bus,
+              color: AppColours.TEXT_SECONDARY_COLOR,
+            ),
+            Text(
+              publisherTelemetry.busName,
+              style: const TextStyle(color: AppColours.TEXT_SECONDARY_COLOR),
+            ),
+            const Icon(
+              Icons.location_on,
+              color: AppColours.TEXT_SECONDARY_COLOR,
+            ),
+            Text(
+              '${distanceInKm.toStringAsFixed(1)} KMs',
+              style: const TextStyle(color: AppColours.TEXT_SECONDARY_COLOR),
+            ),
+            const Icon(
+              Icons.access_time,
+              color: AppColours.TEXT_SECONDARY_COLOR,
+            ),
+            Text(_formatArrivalTime(estimateArrivalTime),
+                style: const TextStyle(color: AppColours.TEXT_SECONDARY_COLOR))
+          ],
+        ),
+      ));
+    }
+
+    return containerETAList;
+  }
+
+  Future<dynamic> onBusStopMarkerHandlerAdvanced(BuildContext context,
+      BusStop busStop, List<PublisherTelemetry> publisherTelemetry) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(busStop.name),
+          content: SizedBox(
+            width: 300,
+            height: 200,
+            child: ListView(
+              children: _deviceETAContainer(busStop, publisherTelemetry),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
