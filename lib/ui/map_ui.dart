@@ -100,30 +100,31 @@ class MapUI {
   ///
   /// Return: Widget, Marker.
   ///
-  // Marker showPublisherDeviceMarkerOnMap(
-  //     List<PublisherTelemetry> telemetryDevices) {
-  //   if (telemetryDevices.isNotEmpty) {
-  //     for (PublisherTelemetry telemetryDevice in telemetryDevices) {
-  //       double busDirection =
-  //           (90 - telemetryDevice.bearing) * (3.1415926535 / 180);
+  MarkerLayer showMultiplePublisherDeviceMarkerOnMap(
+      List<PublisherTelemetry> telemetryDevices) {
+    List<Marker> markerListClean = [];
 
-  //       return Marker(
-  //         point: LatLng(telemetryDevice.latitude, telemetryDevice.longitude),
-  //         width: 80,
-  //         height: 80,
-  //         builder: (context) => Transform.rotate(
-  //           angle: busDirection,
-  //           child: Image.asset(busImagePath),
-  //         ),
-  //       );
-  //     }
-  //   }
+    if (telemetryDevices.isNotEmpty) {
+      for (PublisherTelemetry telemetryDevice in telemetryDevices) {
+        double busDirection =
+            (90 - telemetryDevice.bearing) * (3.1415926535 / 180);
 
-  //   return Marker(
-  //     point: const LatLng(-36.785334, 175.023230),
-  //     width: 80,
-  //     height: 80,
-  //     builder: (context) => Image.asset(busImagePath),
-  //   );
-  // }
+        markerListClean.add(
+          Marker(
+            point: LatLng(telemetryDevice.latitude, telemetryDevice.longitude),
+            width: 80,
+            height: 80,
+            builder: (context) => Transform.rotate(
+              angle: busDirection,
+              child: Image.asset(busImagePath),
+            ),
+          ),
+        );
+      }
+    }
+
+    return MarkerLayer(
+      markers: markerListClean,
+    );
+  }
 }
