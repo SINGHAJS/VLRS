@@ -111,10 +111,14 @@ class _MapScreenState extends State<MapScreen> {
   void updatePublisherTelemetryModel(String dataSnapshot) {
     final json = jsonDecode(dataSnapshot);
     final data = json['data'];
+    logger.i(data);
 
     // Note: Need to add an 'id' or 'name' attribute to the data to
     // distinguish between the devices.
+
+    // busName: data["busName"][0][1],
     _publisherTelemetry = PublisherTelemetry(
+        busName: data["bus"][0][1],
         bearing: double.parse(data["bearing"][0][1]),
         direction: data["direction"][0][1],
         latitude: double.parse(data["latitude"][0][1]),
@@ -123,7 +127,10 @@ class _MapScreenState extends State<MapScreen> {
 
     // This list can be passed on to other functions to iterate over this
     // list and show the devices on the map accordingly.
-    // _telemetryDevices.add(_publisherTelemetry);
+    _telemetryDevices.add(_publisherTelemetry);
+    // for (var telemetryDevice in _telemetryDevices) {
+    //   logger.d(telemetryDevice.direction);
+    // }
   }
 
   @override
@@ -157,19 +164,22 @@ class _MapScreenState extends State<MapScreen> {
                   MarkerLayer(
                     markers: [
                       _mapUI.showUserMarkerOnMapUI(_userLatLng),
-                      _mapUI.showPublisherDeviceMarkerOnMap(
-                          LatLng(_publisherTelemetry.latitude,
-                              _publisherTelemetry.longitude),
-                          _publisherTelemetry.bearing)
+                      // _mapUI.showPublisherDeviceMarkerOnMap(
+                      //     LatLng(_publisherTelemetry.latitude,
+                      //         _publisherTelemetry.longitude),
+                      //     _publisherTelemetry.bearing),
                       // Note: This is to be used to display multiple devices on the map.
-                      // _mapUI.showPublisherDeviceMarkerOnMap(_telemetryDevices),
                     ],
                   ),
+                  _mapUI.showMultiplePublisherDeviceMarkerOnMap(
+                      _telemetryDevices),
                   _mapUI.showUserCircleLayerOnMapUI(_userLatLng),
                   _mapRouteUI.drawVehicleRoute(_mapRouteToData, Colors.blue),
                   _mapRouteUI.drawVehicleRoute(_mapRouteFromData, Colors.blue),
-                  _mapRouteUI.displayBusStopOnMap(
-                      _mapBusStopData, _publisherTelemetry),
+                  // _mapRouteUI.displayBusStopOnMap(
+                  //     _mapBusStopData, _publisherTelemetry),
+                  _mapRouteUI.displayBusStopOnMapAdvanced(
+                      _mapBusStopData, _telemetryDevices),
                 ],
               ),
               // _navigationUI.showNavigationBar(context),
