@@ -59,4 +59,28 @@ class MapRouteUI {
       markers: markerListClean,
     );
   }
+
+  MarkerLayer displayBusStopOnMapAdvanced(
+      List<BusStop> markerList, List<PublisherTelemetry> publisherTelemetry) {
+    List<Marker> markerListClean = [];
+
+    for (BusStop bStop in markerList) {
+      markerListClean.add(Marker(
+        width: 80,
+        height: 80,
+        point: LatLng(bStop.latitude, bStop.longitude),
+        builder: (BuildContext context) {
+          return GestureDetector(
+            onTap: () => _mapRouteController.onBusStopMarkerHandlerAdvanced(
+                context, bStop, publisherTelemetry),
+            child: Image.asset(_busStopImagePath),
+          );
+        },
+      ));
+    }
+
+    return MarkerLayer(
+      markers: markerListClean,
+    );
+  }
 }
