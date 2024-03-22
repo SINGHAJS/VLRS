@@ -48,10 +48,10 @@ class JsonUtils {
       final List<dynamic> coordinates = value as List<dynamic>;
       for (final dynamic data in coordinates) {
         final BusStop busStop = BusStop(
-          name: data['bus-stop-name'] as String,
-          latitude: data['latitude'] as double,
-          longitude: data['longitude'] as double,
-        );
+            name: data['bus-stop-name'] as String,
+            latitude: data['latitude'] as double,
+            longitude: data['longitude'] as double,
+            distanceToNextStop: data['distance-to-next-stop'] as double);
         busStops.add(busStop);
       }
     });
