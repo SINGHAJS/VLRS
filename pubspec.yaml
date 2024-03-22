@@ -43,6 +43,7 @@ dependencies:
   hive_flutter: ^1.1.0
   go_router: ^11.1.3
   geodesy: ^0.10.1
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:
