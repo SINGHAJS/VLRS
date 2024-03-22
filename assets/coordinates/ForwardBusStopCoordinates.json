@@ -1,0 +1,58 @@
+{
+  "1": [
+    {
+      "latitude": -36.78012,
+      "longitude": 174.99216,
+      "bus-stop-name": "S/E",
+      "distance-to-next-stop": 1447
+    },
+    {
+      "latitude": -36.78125,
+      "longitude": 175.007,
+      "bus-stop-name": "1",
+      "distance-to-next-stop": 436
+    },
+    {
+      "latitude": -36.78316,
+      "longitude": 175.01086,
+      "bus-stop-name": "2",
+      "distance-to-next-stop": 3731
+    },
+    {
+      "latitude": -36.79871,
+      "longitude": 175.03447,
+      "bus-stop-name": "3",
+      "distance-to-next-stop": 1348
+    },
+    {
+      "latitude": -36.79569,
+      "longitude": 175.04737,
+      "bus-stop-name": "4",
+      "distance-to-next-stop": 2115
+    },
+    {
+      "latitude": -36.80121,
+      "longitude": 175.06579,
+      "bus-stop-name": "5",
+      "distance-to-next-stop": 374
+    },
+    {
+      "latitude": -36.80069,
+      "longitude": 175.06972,
+      "bus-stop-name": "6",
+      "distance-to-next-stop": 559
+    },
+    {
+      "latitude": -36.79867,
+      "longitude": 175.07527,
+      "bus-stop-name": "7",
+      "distance-to-next-stop": 1688
+    },
+    {
+      "latitude": -36.78842,
+      "longitude": 175.08302,
+      "bus-stop-name": "8",
+      "distance-to-next-stop": 2262
+    }
+  ]
+}
