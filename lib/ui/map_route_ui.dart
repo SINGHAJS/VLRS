@@ -6,7 +6,6 @@ import 'package:vlrs/controllers/map_route_controller.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
 
 class MapRouteUI {
-  final String _busStopImagePath = 'assets/images/map_screen/bus-stop.png';
   final MapRouteController _mapRouteController = MapRouteController();
 
   ///
@@ -30,57 +29,57 @@ class MapRouteUI {
   }
 
   ///
-  /// This function returns  multiple markers of a the stops from the list given.
-  /// Param: [markerList], list of marker data
-  /// Param: [publisherTelemetry], publisher telemetry object
+  /// This function is responsible for returning the marker layer of bus stops.
   ///
-  /// Return: Widget, MarkerLayer
+  /// Param: [busStopList], list of bus stops
+  /// Param: [publisherTelemetry], list of publisher devices
   ///
+  /// Returns: Widget, MarkerLayer
   MarkerLayer displayBusStopOnMap(
-      List<BusStop> markerList, PublisherTelemetry publisherTelemetry) {
-    List<Marker> markerListClean = [];
+      List<BusStop> busStopList, List<PublisherTelemetry> publisherTelemetry) {
+    List<Marker> busStopListClean = [];
 
-    for (BusStop bStop in markerList) {
-      markerListClean.add(Marker(
-        width: 80,
-        height: 80,
-        point: LatLng(bStop.latitude, bStop.longitude),
-        builder: (BuildContext context) {
-          return GestureDetector(
-            onTap: () => _mapRouteController.onBusStopMarkerHandler(
-                context, bStop, publisherTelemetry),
-            child: Image.asset(_busStopImagePath),
-          );
-        },
-      ));
+    for (BusStop bStop in busStopList) {
+      busStopListClean.add(
+        Marker(
+          width: 40,
+          height: 40,
+          point: LatLng(bStop.latitude, bStop.longitude),
+          builder: (BuildContext context) {
+            return GestureDetector(
+              onTap: () => _mapRouteController.onBusStopMarkerHandler(
+                  context, bStop, publisherTelemetry),
+              child: busStopIcon(bStop.name),
+            );
+          },
+        ),
+      );
     }
 
     return MarkerLayer(
-      markers: markerListClean,
+      markers: busStopListClean,
     );
   }
 
-  MarkerLayer displayBusStopOnMapAdvanced(
-      List<BusStop> markerList, List<PublisherTelemetry> publisherTelemetry) {
-    List<Marker> markerListClean = [];
-
-    for (BusStop bStop in markerList) {
-      markerListClean.add(Marker(
-        width: 80,
-        height: 80,
-        point: LatLng(bStop.latitude, bStop.longitude),
-        builder: (BuildContext context) {
-          return GestureDetector(
-            onTap: () => _mapRouteController.onBusStopMarkerHandlerAdvanced(
-                context, bStop, publisherTelemetry),
-            child: Image.asset(_busStopImagePath),
-          );
-        },
-      ));
-    }
-
-    return MarkerLayer(
-      markers: markerListClean,
+  ///
+  /// This function is responsible for returning the bus stop icon.
+  ///
+  /// Param: [title], name of icon
+  ///
+  /// Returns: Widget, Container
+  Widget busStopIcon(String title) {
+    return Container(
+      decoration: BoxDecoration(
+          color: Colors.black, borderRadius: BorderRadius.circular(10.0)),
+      child: Center(
+        child: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
     );
   }
 }
