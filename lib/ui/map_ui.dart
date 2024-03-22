@@ -4,10 +4,14 @@ import 'package:latlong2/latlong.dart';
 import 'package:vlrs/constants/constants.dart';
 import 'package:vlrs/ui/error_ui.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
+import 'package:vlrs/controllers/map_route_controller.dart';
+import 'package:logger/logger.dart';
 
 class MapUI {
   late final ErrorUI _errorUI = ErrorUI();
   final String busImagePath = 'assets/images/map_screen/bus.png';
+  final MapRouteController _mapRouteController = MapRouteController();
+  final Logger logger = Logger();
 
   ///
   /// This function is used to validate if the map widget is ready.
@@ -31,18 +35,18 @@ class MapUI {
   ///
   /// Return: Widget, Marker.
   ///
-  Marker showUserMarkerOnMapUI(LatLng userLatLng) {
-    return Marker(
-      point: userLatLng,
-      width: 80,
-      height: 80,
-      builder: (context) => const Icon(
-        Icons.my_location,
-        size: 35.0,
-        color: Colors.red,
-      ),
-    );
-  }
+  // Marker showUserMarkerOnMapUI(LatLng userLatLng) {
+  //   return Marker(
+  //     point: userLatLng,
+  //     width: 80,
+  //     height: 80,
+  //     builder: (context) => const Icon(
+  //       Icons.my_location,
+  //       size: 35.0,
+  //       color: Colors.red,
+  //     ),
+  //   );
+  // }
 
   ///
   /// This function returns circular layer for the user's current location.
@@ -51,45 +55,24 @@ class MapUI {
   /// Return: Widget, CircularLayer.
   ///
   Widget showUserCircleLayerOnMapUI(LatLng userLatLng) {
+    double innerRadius = 18;
+    double outerRadius = 14;
+
     return CircleLayer(
       circles: [
         CircleMarker(
           point: userLatLng,
-          radius: 18,
+          radius: innerRadius,
           useRadiusInMeter: true,
           color: const Color.fromRGBO(255, 255, 255, 1),
         ),
         CircleMarker(
           point: userLatLng,
-          radius: 14,
+          radius: outerRadius,
           useRadiusInMeter: true,
           color: const Color.fromRGBO(33, 150, 243, 1),
         ),
       ],
-    );
-  }
-
-  ///
-  /// This function returns a marker for the publisher device's current location.
-  /// Param: [publisherDeviceLatLng], lat and long of publisher device's location.
-  /// Param: [bearing], bearing data of the publisher device to point the bus
-  ///        to that direction.
-  ///
-  /// Return: Widget, Marker.
-  ///
-  Marker showPublisherDeviceMarkerOnMap(
-      LatLng publisherDeviceLatLng, double bearing) {
-    // double busDirection = (90 - bearing) * (3.1415926535 / 180);
-    double busDirection = (90 - bearing) * (Constants.PI / 180);
-
-    return Marker(
-      point: publisherDeviceLatLng,
-      width: 80,
-      height: 80,
-      builder: (context) => Transform.rotate(
-        angle: busDirection,
-        child: Image.asset(busImagePath),
-      ),
     );
   }
 
@@ -101,7 +84,8 @@ class MapUI {
   /// Return: Widget, Marker.
   ///
   MarkerLayer showMultiplePublisherDeviceMarkerOnMap(
-      List<PublisherTelemetry> telemetryDevices) {
+    List<PublisherTelemetry> telemetryDevices,
+  ) {
     List<Marker> markerListClean = [];
 
     if (telemetryDevices.isNotEmpty) {
@@ -114,10 +98,15 @@ class MapUI {
             point: LatLng(telemetryDevice.latitude, telemetryDevice.longitude),
             width: 80,
             height: 80,
-            builder: (context) => Transform.rotate(
-              angle: busDirection,
-              child: Image.asset(busImagePath),
-            ),
+            builder: (BuildContext context) {
+              return GestureDetector(
+                onTap: () => logger.i('BUS BUTTON CLICKED'),
+                child: Transform.rotate(
+                  angle: busDirection,
+                  child: Image.asset(busImagePath),
+                ),
+              );
+            },
           ),
         );
       }
