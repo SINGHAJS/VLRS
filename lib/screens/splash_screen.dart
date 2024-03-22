@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:vlrs/constants/app_colours.dart';
+import 'package:vlrs/ui/splash_ui.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    void onContinueClickHandler() {
-      context.go('/map');
-    }
+    // UI
+    SplashUI _splashUI = SplashUI();
 
     return Scaffold(
       body: Center(
         child: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xFF87CEEB), Color(0xFF6A5ACD)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            gradient: AppColours.BACKGROUND_PRIMARY_GRADIENT,
           ),
           width: double.infinity, // Take up full width
           height: double.infinity, // Take up full height
@@ -29,47 +25,9 @@ class SplashScreen extends StatelessWidget {
                 CrossAxisAlignment.center, // Center horizontally
             children: <Widget>[
               // Load application icon image from assets.
-              Image.asset(
-                'assets/images/splash_screen/earth_pin_location.png',
-                width: 200,
-                height: 200,
-              ),
-              const Column(
-                children: [
-                  Text(
-                    'WELCOME TO VLRS!',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 28.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'Vehicle Location Reporting System',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(
-                width: 150,
-                height: 40,
-                child: ElevatedButton(
-                  onPressed: onContinueClickHandler,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.white, // Set the background color to white
-                  ),
-                  child: const Text(
-                    'Continue',
-                    style: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
+              _splashUI.showSplashScreenIcon(),
+              _splashUI.showSplashScreenHeadings(),
+              _splashUI.showContinueButton(context),
             ],
           ),
         ),

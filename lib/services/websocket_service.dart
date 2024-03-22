@@ -27,10 +27,16 @@ class WebSocketService {
       'tsSubCmds': [
         {
           'entityType': 'DEVICE',
-          'entityId': WebSocketConstants.PUBLISHER_DEVICE_ID,
+          'entityId': WebSocketConstants.PUBLISHER_DEVICE_ID_A,
           'scope': 'LATEST_TELEMETRY',
           'cmdId': 10
-        }
+        },
+        {
+          'entityType': 'DEVICE',
+          'entityId': WebSocketConstants.PUBLISHER_DEVICE_ID_B,
+          'scope': 'LATEST_TELEMETRY',
+          'cmdId': 11
+        },
       ],
       'historyCmds': [],
       'attrSubCmds': []

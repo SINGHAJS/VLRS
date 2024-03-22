@@ -42,6 +42,8 @@ dependencies:
   dio: ^5.3.3
   hive_flutter: ^1.1.0
   go_router: ^11.1.3
+  geodesy: ^0.10.1
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +73,7 @@ flutter:
     - assets/coordinates/
     - assets/images/splash_screen/earth_pin_location.png
     - assets/images/map_screen/bus.png
+    - assets/images/map_screen/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
