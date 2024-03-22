@@ -1,17 +1,27 @@
+import 'package:vlrs/model/bus_stop.dart';
+
 class PublisherTelemetry {
-  final double bearing;
-  final String direction;
-  final double latitude;
-  final double longitude;
-  final double speed;
-  final String busName;
+  double bearing;
+  String direction;
+  double latitude;
+  double longitude;
+  double speed;
+  String busName;
+  String departureTime;
+  String showDepartureTime;
+  BusStop? closestBusStop;
+  String routeDirection;
 
   PublisherTelemetry({
-    this.busName = 'Bus X',
+    this.busName = 'undefined',
     required this.bearing,
     required this.direction,
     required this.latitude,
     required this.longitude,
     required this.speed,
+    required this.departureTime,
+    required this.showDepartureTime,
+    this.closestBusStop,
+    this.routeDirection = 'forward',
   });
 }
