@@ -36,7 +36,7 @@ class WebSocketService {
           'entityId': WebSocketConstants.PUBLISHER_DEVICE_ID_B,
           'scope': 'LATEST_TELEMETRY',
           'cmdId': 11
-        }
+        },
       ],
       'historyCmds': [],
       'attrSubCmds': []
