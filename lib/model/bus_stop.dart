@@ -2,7 +2,7 @@ class BusStop {
   final String name;
   final double latitude;
   final double longitude;
-  double distanceToNextStop;
+  final num distanceToNextStop;
 
   BusStop({
     required this.name,
