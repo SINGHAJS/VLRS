@@ -35,11 +35,11 @@ class _MapScreenState extends State<MapScreen> {
 
   // Map
   final JsonUtils _jsonUtils = JsonUtils();
-  late List<LatLng> _mapRouteToData;
-  late List<LatLng> _mapRouteFromData;
-  late List<BusStop> _mapBusStopData;
-  late List<BusStop> _forwardBusStopData;
-  late List<BusStop> _backwardBusStopData;
+  List<LatLng> _mapRouteToData = [];
+  List<LatLng> _mapRouteFromData = [];
+  List<BusStop> _mapBusStopData = [];
+  List<BusStop> _forwardBusStopData = [];
+  List<BusStop> _backwardBusStopData = [];
 
   // WebSocket
   final WebSocketService _webSocketService = WebSocketService();
@@ -74,8 +74,8 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
-    _getUserLocation();
     _webSocketService.validateToken();
+    _getUserLocation();
     _getRoutesData();
   }
 
@@ -90,20 +90,26 @@ class _MapScreenState extends State<MapScreen> {
   /// [_isRouteDataReceived] flag.
   ///
   Future<void> _getRoutesData() async {
-    _mapRouteToData =
+    List<LatLng> mapRouteToData =
         await _jsonUtils.readLatLngFromJson(_routeCoordinatesToPath);
-    _mapRouteFromData =
+    List<LatLng> mapRouteFromData =
         await _jsonUtils.readLatLngFromJson(_routeCoordinatesFromPath);
-    _mapBusStopData =
+    List<BusStop> mapBusStopData =
         await _jsonUtils.readBusStopDataFromJson(_busStopCoordinatesFile);
-
-    _forwardBusStopData = await _jsonUtils
+    List<BusStop> forwardBusStopData = await _jsonUtils
         .readBusStopDataFromJson(_busStopForwardCoordinatesFile);
-    _backwardBusStopData = await _jsonUtils
+    List<BusStop> backwardBusStopData = await _jsonUtils
         .readBusStopDataFromJson(_busStopBackwardCoordinatesFile);
 
     setState(() {
+      _mapRouteToData = mapRouteToData;
+      _mapRouteFromData = mapRouteFromData;
+      _mapBusStopData = mapBusStopData;
+      _forwardBusStopData = forwardBusStopData;
+      _backwardBusStopData = backwardBusStopData;
+
       _isRouteDataReceived = true;
+      logger.i("Route Data Ready");
     });
   }
 
@@ -113,8 +119,10 @@ class _MapScreenState extends State<MapScreen> {
   ///
   Future<void> _getUserLocation() async {
     _userLatLng = await _geolocationService.getCurrentUserLocation();
+
     setState(() {
       _isUserLocationAttained = true;
+      logger.i("Location Data Ready");
     });
   }
 
@@ -130,13 +138,12 @@ class _MapScreenState extends State<MapScreen> {
     String busName = data["bus"][0][1];
     double latitude = double.parse(data["latitude"][0][1]);
     double longitude = double.parse(data["longitude"][0][1]);
-    double bearing = double.parse(data["bearing"][0][1]);
+    double bearing = double.parse(data["bearingCustomer"][0][1]);
     double speed = double.parse(data["speed"][0][1]);
     String direction = data["direction"][0][1];
     String departureTime = data['departureTime'][0][1];
     String showDepartureTime = data['showDepartureTime'][0][1];
     String routeDirection = data['routeDirection'][0][1];
-
     // logger.i(data);
 
     final existingBusIndex =
@@ -159,15 +166,8 @@ class _MapScreenState extends State<MapScreen> {
               _backwardBusStopData);
       _telemetryDevices[existingBusIndex].routeDirection = routeDirection;
 
-      // _mapRouteController.assignAndCalculateClosestBusStopToPublisherDevice(
-      //     _telemetryDevices[existingBusIndex], _mapBusStopData);
-
       return;
     }
-
-    // Bus object does not exist, create a new instance of the bus.
-    // late BusStop closestBusStopToPublisherDevice =
-    //     _mapBusStopData.firstWhere((element) => element.name == 'S/E');
 
     _publisherTelemetry = PublisherTelemetry(
       busName: busName,
@@ -188,9 +188,6 @@ class _MapScreenState extends State<MapScreen> {
             _forwardBusStopData,
             _backwardBusStopData);
 
-    // _publisherTelemetry.closestBusStop ??=
-    //     _mapBusStopData.firstWhere((element) => element.name == 'S/E');
-
     _telemetryDevices.add(_publisherTelemetry);
   }
 
@@ -200,9 +197,12 @@ class _MapScreenState extends State<MapScreen> {
       body: StreamBuilder(
         stream: _webSocketService.telemetryStream().stream,
         builder: (context, snapshot) {
-          if (!_mapUI.isMapWidgetReady(snapshot, _isUserLocationAttained)) {
+          if (!_mapUI.isMapWidgetReady(snapshot, _isUserLocationAttained) &&
+              !_isRouteDataReceived) {
             return _loadingUI.displayMapLoadingAnimation();
-          } else {
+          } else if (_mapUI.isMapWidgetReady(
+                  snapshot, _isUserLocationAttained) &&
+              _isRouteDataReceived) {
             updatePublisherTelemetryModel(snapshot.data);
             return Stack(children: <Widget>[
               FlutterMap(
@@ -230,12 +230,18 @@ class _MapScreenState extends State<MapScreen> {
                   _mapRouteUI.drawVehicleRoute(_mapRouteToData, Colors.blue),
                   _mapRouteUI.drawVehicleRoute(_mapRouteFromData, Colors.blue),
                   _mapRouteUI.displayBusStopOnMap(
-                      _mapBusStopData, _telemetryDevices),
+                      _mapBusStopData,
+                      _telemetryDevices,
+                      _mapBusStopData,
+                      _forwardBusStopData,
+                      _backwardBusStopData),
                 ],
               ),
               // Note: Use code below to show/use the navigation bar.
               // _navigationUI.showNavigationBar(context),
             ]);
+          } else {
+            return _loadingUI.displayMapLoadingAnimation();
           }
         },
       ),

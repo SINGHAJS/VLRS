@@ -51,7 +51,7 @@ class JsonUtils {
             name: data['bus-stop-name'] as String,
             latitude: data['latitude'] as double,
             longitude: data['longitude'] as double,
-            distanceToNextStop: data['distance-to-next-stop'] as double);
+            distanceToNextStop: data['distance-to-next-stop'] as num);
         busStops.add(busStop);
       }
     });

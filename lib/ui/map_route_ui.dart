@@ -36,7 +36,11 @@ class MapRouteUI {
   ///
   /// Returns: Widget, MarkerLayer
   MarkerLayer displayBusStopOnMap(
-      List<BusStop> busStopList, List<PublisherTelemetry> publisherTelemetry) {
+      List<BusStop> busStopList,
+      List<PublisherTelemetry> publisherTelemetry,
+      List<BusStop> busStopsList,
+      List<BusStop> forwardBusStopsList,
+      List<BusStop> backwardBusStopsList) {
     List<Marker> busStopListClean = [];
 
     for (BusStop bStop in busStopList) {
@@ -48,7 +52,7 @@ class MapRouteUI {
           builder: (BuildContext context) {
             return GestureDetector(
               onTap: () => _mapRouteController.onBusStopMarkerHandler(
-                  context, bStop, publisherTelemetry),
+                  context, bStop, publisherTelemetry, busStopList),
               child: busStopIcon(bStop.name),
             );
           },

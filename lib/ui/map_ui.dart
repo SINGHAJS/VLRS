@@ -90,8 +90,7 @@ class MapUI {
 
     if (telemetryDevices.isNotEmpty) {
       for (PublisherTelemetry telemetryDevice in telemetryDevices) {
-        double busDirection =
-            (90 - telemetryDevice.bearing) * (3.1415926535 / 180);
+        double busDirection = (telemetryDevice.bearing) * (3.1415926535 / 180);
 
         markerListClean.add(
           Marker(
