@@ -74,6 +74,7 @@ flutter:
     - assets/images/splash_screen/earth_pin_location.png
     - assets/images/map_screen/bus.png
     - assets/images/map_screen/
+    - assets/test_files/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
