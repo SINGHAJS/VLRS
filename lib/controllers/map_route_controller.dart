@@ -6,14 +6,10 @@ import 'package:vlrs/model/eta.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
 import 'package:vlrs/services/tomtom_service.dart';
 import 'package:vlrs/ui/eta_ui.dart';
-import 'package:vlrs/utils/json_utils.dart';
 
 class MapRouteController {
   final Logger _logger = Logger();
   final List<ETA> _etaList = [];
-  // final JsonUtils _jsonUtils = JsonUtils();
-
-  final String _busStopFilePath = 'assets/coordinates/BusStopCoordinates.json';
   List<BusStop> _busStopList = [];
 
   ///
@@ -23,10 +19,6 @@ class MapRouteController {
   ///
   void _initBusLists(List<BusStop> busStopsList) {
     _busStopList = busStopsList;
-
-    // if (_busStopList.isEmpty) {
-    //   _busStopList = await _jsonUtils.readBusStopDataFromJson(_busStopFilePath);
-    // }
   }
 
   ///
@@ -92,9 +84,6 @@ class MapRouteController {
         double estimateTimeOfArrivalFromAddedDistance =
             (totalDistanceBetween / publisherTelemetry.speed);
 
-        // double estimateTimeOfArrivalFromAddedDistance =
-        //     (totalDistanceBetween / 50);
-
         String busName = publisherTelemetry.busName;
         String distanceInKms = totalDistanceBetween.toStringAsFixed(2);
         String formattedArrivalTime =
@@ -113,14 +102,9 @@ class MapRouteController {
             (element) => element.busName == publisherTelemetry.busName);
 
         if (existingETAIndex != -1) {
-          // _logger.i('Removing exsting ETA | Add new ETA');
+          // Update existing entry data
           _etaList.removeAt(existingETAIndex);
           _etaList.add(eta);
-          // Update existing entry data
-          // _etaList[existingETAIndex].estimateArrivalTime =
-          //     eta.estimateArrivalTime;
-          // _etaList[existingETAIndex].distanceInKms = eta.distanceInKms;
-          // _etaList[existingETAIndex].showDepartureTime = eta.showDepartureTime;
         } else {
           // Add new entry of ETA
           _etaList.add(eta);
@@ -401,65 +385,33 @@ class MapRouteController {
       },
     );
   }
-  // Future<dynamic> onBusStopMarkerHandler(BuildContext context, BusStop busStop,
-  //     List<PublisherTelemetry> publisherTelemetry, List<BusStop> busStopsList) {
-  //   _initBusLists(busStopsList);
 
-  //   return showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return FutureBuilder(
-  //         future: getETAList(busStop, publisherTelemetry),
-  //         builder: ((context, snapshot) {
-  //           if (snapshot.connectionState == ConnectionState.done) {
-  // if (_etaList.isEmpty) {
-  //   return UiETA.showNoBusesScheduledMessage(busStop.name);
-  // } else {
-  //               return AlertDialog(
-  // title: Row(
-  //   children: <Widget>[
-  //     const Icon(Icons.place),
-  //     Text(' ${busStop.name}'),
-  //   ],
-  // ),
-  //                 content: SizedBox(
-  //                   width: 300,
-  //                   height: 200,
-  //                   child: ListView.builder(
-  //                     itemCount: _etaList.length,
-  //                     itemBuilder: (context, index) {
-  //                       if (_etaList[index].showDepartureTime) {
-  //   return UiETA.showDepartureETAContainerUI(
-  //       _etaList[index].busName,
-  //       _etaList[index].departureTime);
-  // }
+  ///
+  /// <<TEST PURPOSES>>
+  ///
+  int convertBusStopNumberToInt(BusStop? busStop) {
+    return busStop!.name == 'S/E' ? 0 : int.parse(busStop.name);
+  }
 
-  // return UiETA.showETAInfoContainerUI(
-  //     _etaList[index].busName,
-  //     _etaList[index].distanceInKms,
-  //     _etaList[index].estimateArrivalTime);
-  //                     },
-  //                   ),
-  //                 ),
-  //               );
-  //             }
-  //           }
-  //           // Waiting for data
-  //           else {
-  //             return AlertDialog(
-  //               title: Text('Bus Stop: ${busStop.name}'),
-  //               content: const SizedBox(
-  //                 width: 300,
-  //                 height: 200,
-  //                 child: Center(
-  //                   child: CircularProgressIndicator(),
-  //                 ),
-  //               ),
-  //             );
-  //           }
-  //         }),
-  //       );
-  //     },
-  //   );
-  // }
+  ///
+  /// <<TEST PURPOSES>>
+  ///
+  double calculateETA(double distance, double speed) {
+    return distance / speed;
+  }
+
+  ///
+  /// <<TEST PURPOSES>>
+  ///
+  String formatArrivalTime(double estimateArrivalTime) {
+    // Calculate hours, minutes, and seconds
+    int hours = estimateArrivalTime.toInt();
+    int minutes = ((estimateArrivalTime - hours) * 60).toInt();
+    int seconds = (((estimateArrivalTime - hours) * 60 - minutes) * 60).toInt();
+
+    // Format the time as "hh:mm:ss"
+    String formattedArrivalTime =
+        '$hours:${_twoDigits(minutes)}:${_twoDigits(seconds)}';
+    return formattedArrivalTime;
+  }
 }
