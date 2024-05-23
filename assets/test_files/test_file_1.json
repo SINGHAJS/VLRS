@@ -1,0 +1,16 @@
+{
+  "1": [
+    {
+      "latitude": -36.78125,
+      "longitude": 175.007,
+      "bus-stop-name": "1",
+      "distance-to-next-stop": 436
+    },
+    {
+      "latitude": -36.78316,
+      "longitude": 175.01086,
+      "bus-stop-name": "2",
+      "distance-to-next-stop": 3731
+    }
+  ]
+}
