@@ -81,8 +81,10 @@ class MapRouteController {
 
         // Calculate the estimate time of arrival based on the speed of the
         // publisher device.
+        // double estimateTimeOfArrivalFromAddedDistance =
+        //     (totalDistanceBetween / publisherTelemetry.speed);
         double estimateTimeOfArrivalFromAddedDistance =
-            (totalDistanceBetween / publisherTelemetry.speed);
+            (totalDistanceBetween / 50);
 
         String busName = publisherTelemetry.busName;
         String distanceInKms = totalDistanceBetween.toStringAsFixed(2);
