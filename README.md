@@ -34,7 +34,7 @@ Flutter development environment set up (Flutter SDK, Android Studio or Xcode)
            - Go back to Settings > System > Developer options and enable USB Debugging.
      - Connect your device via USB, or ensure your emulator is running.
     
-  - For iOS:
+   - For iOS:
     - Open the ios directory in Xcode.
           - Launch Xcode and open the ios directory of your project.
     - Ensure your iOS device is connected, or use a simulator.
