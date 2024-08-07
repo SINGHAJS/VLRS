@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vlrs/config/route_configuration.dart';
 
 void main() async {
@@ -14,13 +15,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'VLRS',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: 'Roboto',
+    return ProviderScope(
+      child: MaterialApp.router(
+        title: 'VLRS',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          fontFamily: 'Roboto',
+        ),
+        routerConfig: router,
       ),
-      routerConfig: router,
     );
   }
 }
