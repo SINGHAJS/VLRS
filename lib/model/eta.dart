@@ -1,4 +1,5 @@
 class ETA {
+  String aid;
   String busStopName;
   String busName;
   String? estimateArrivalTime;
@@ -7,6 +8,7 @@ class ETA {
   bool showDepartureTime;
 
   ETA({
+    required this.aid,
     required this.busStopName,
     required this.busName,
     this.estimateArrivalTime,

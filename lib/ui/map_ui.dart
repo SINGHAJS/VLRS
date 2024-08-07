@@ -10,7 +10,7 @@ import 'package:logger/logger.dart';
 class MapUI {
   late final ErrorUI _errorUI = ErrorUI();
   final String busImagePath = 'assets/images/map_screen/bus.png';
-  final MapRouteController _mapRouteController = MapRouteController();
+  // final MapRouteController _mapRouteController = MapRouteController();
   final Logger logger = Logger();
 
   ///

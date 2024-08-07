@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:vlrs/controllers/map_route_controller.dart';
 import 'package:vlrs/model/bus_stop.dart';
@@ -8,20 +9,23 @@ import 'package:vlrs/services/geolocation_service.dart';
 import 'package:logger/logger.dart';
 import 'package:vlrs/services/websocket_service.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
+import 'package:vlrs/ui/bus_stop_ui.dart';
 import 'package:vlrs/ui/map_route_ui.dart';
 import 'package:vlrs/ui/map_ui.dart';
 import 'package:vlrs/ui/loading_ui.dart';
 import 'package:vlrs/ui/navigation_ui.dart';
 import 'package:vlrs/utils/json_utils.dart';
+import 'package:vlrs/providers/telemetry_devices_provider.dart';
+import 'package:vlrs/providers/estimate_time_arrival_provider.dart';
 
-class MapScreen extends StatefulWidget {
+class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
 
   @override
-  State<MapScreen> createState() => _MapScreenState();
+  ConsumerState<MapScreen> createState() => _MapScreenState();
 }
 
-class _MapScreenState extends State<MapScreen> {
+class _MapScreenState extends ConsumerState<MapScreen> {
   // Logger
   final Logger logger = Logger();
 
@@ -64,12 +68,13 @@ class _MapScreenState extends State<MapScreen> {
   final LoadingUI _loadingUI = LoadingUI();
   final NavigationUI _navigationUI = NavigationUI();
   final MapRouteUI _mapRouteUI = MapRouteUI();
+  final BusStopUI _busStopUI = BusStopUI();
 
   // Lists
-  final List<PublisherTelemetry> _telemetryDevices = [];
+  // final List<PublisherTelemetry> _telemetryDevices = [];
 
   // Controllers
-  final MapRouteController _mapRouteController = MapRouteController();
+  // final MapRouteController _mapRouteController = MapRouteController();
 
   @override
   void initState() {
@@ -126,84 +131,28 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  ///
-  /// This function takes the data snapshot and creates/updates a
-  /// [PublisherTelemetry] object.
-  ///
-  /// [dataSnapshot] - String value of the snapshot data
-  ///
-  void updatePublisherTelemetryModel(String dataSnapshot) {
-    final json = jsonDecode(dataSnapshot);
-    final data = json['data'];
-    String busName = data["bus"][0][1];
-    double latitude = double.parse(data["latitude"][0][1]);
-    double longitude = double.parse(data["longitude"][0][1]);
-    double bearing = double.parse(data["bearingCustomer"][0][1]);
-    double speed = double.parse(data["speed"][0][1]);
-    String direction = data["direction"][0][1];
-    String departureTime = data['departureTime'][0][1];
-    String showDepartureTime = data['showDepartureTime'][0][1];
-    String routeDirection = data['routeDirection'][0][1];
-    // logger.i(data);
-
-    final existingBusIndex =
-        _telemetryDevices.indexWhere((device) => device.busName == busName);
-
-    if (existingBusIndex != -1) {
-      // Bus object exists, update existing data.
-      _telemetryDevices[existingBusIndex].latitude = latitude;
-      _telemetryDevices[existingBusIndex].longitude = longitude;
-      _telemetryDevices[existingBusIndex].bearing = bearing;
-      _telemetryDevices[existingBusIndex].speed = speed;
-      _telemetryDevices[existingBusIndex].direction = direction;
-      _telemetryDevices[existingBusIndex].departureTime = departureTime;
-      _telemetryDevices[existingBusIndex].showDepartureTime = showDepartureTime;
-      _telemetryDevices[existingBusIndex].closestBusStop =
-          _mapRouteController.assignAndCalculateClosestBusStopToPublisherDevice(
-              _telemetryDevices[existingBusIndex],
-              _mapBusStopData,
-              _forwardBusStopData,
-              _backwardBusStopData);
-      _telemetryDevices[existingBusIndex].routeDirection = routeDirection;
-
-      return;
-    }
-
-    _publisherTelemetry = PublisherTelemetry(
-      busName: busName,
-      bearing: bearing,
-      direction: direction,
-      latitude: latitude,
-      longitude: longitude,
-      speed: speed,
-      departureTime: departureTime,
-      showDepartureTime: showDepartureTime,
-      routeDirection: routeDirection,
-    );
-
-    _publisherTelemetry.closestBusStop =
-        _mapRouteController.assignAndCalculateClosestBusStopToPublisherDevice(
-            _publisherTelemetry,
-            _mapBusStopData,
-            _forwardBusStopData,
-            _backwardBusStopData);
-
-    _telemetryDevices.add(_publisherTelemetry);
-  }
-
   @override
   Widget build(BuildContext context) {
+    // logger.d(ref.watch(telemetryDevicesProvider));
+    // logger.d(ref.watch(estimateTimeArrivalProvider));
+
     return Scaffold(
       body: StreamBuilder(
         stream: _webSocketService.telemetryStream().stream,
         builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data == null) {
+            return _loadingUI.displayMapLoadingAnimation();
+          }
+
           if (!_mapUI.isMapWidgetReady(snapshot, _isUserLocationAttained) &&
               !_isRouteDataReceived) {
             return _loadingUI.displayMapLoadingAnimation();
           } else if (_mapUI.isMapWidgetReady(
                   snapshot, _isUserLocationAttained) &&
               _isRouteDataReceived) {
-            updatePublisherTelemetryModel(snapshot.data);
+            ref
+                .read(telemetryDevicesProvider.notifier)
+                .addPublisherTelemetryDevice(snapshot.data);
             return Stack(children: <Widget>[
               FlutterMap(
                 options: MapOptions(
@@ -225,16 +174,17 @@ class _MapScreenState extends State<MapScreen> {
                   //   ],
                   // ),
                   _mapUI.showMultiplePublisherDeviceMarkerOnMap(
-                      _telemetryDevices),
+                      ref.watch(telemetryDevicesProvider)),
                   _mapUI.showUserCircleLayerOnMapUI(_userLatLng),
                   _mapRouteUI.drawVehicleRoute(_mapRouteToData, Colors.blue),
                   _mapRouteUI.drawVehicleRoute(_mapRouteFromData, Colors.blue),
-                  _mapRouteUI.displayBusStopOnMap(
+                  _busStopUI.displayBusStopOnMap(
                       _mapBusStopData,
-                      _telemetryDevices,
+                      ref.watch(telemetryDevicesProvider),
                       _mapBusStopData,
                       _forwardBusStopData,
-                      _backwardBusStopData),
+                      _backwardBusStopData,
+                      ref.watch(estimateTimeArrivalProvider)),
                 ],
               ),
               // Note: Use code below to show/use the navigation bar.
@@ -253,7 +203,10 @@ class _MapScreenState extends State<MapScreen> {
             _getUserLocation();
           })
         },
-        child: const Icon(Icons.location_searching),
+        child: const Icon(
+          Icons.location_searching,
+          color: Colors.white,
+        ),
       ),
     );
   }
