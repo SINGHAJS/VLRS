@@ -27,10 +27,18 @@ class EstimateTimeArrivalController {
           _updateOrAddETA(departureETA, listOfETAs);
         } else if (publisherTelemetry.showDepartureTime == 'No' ||
             publisherTelemetry.departureTime == '00:00:00') {
-          final isCurrentETARemoved = _removePubDeviceIfPassedBStop(
-              clickedBusStop, publisherTelemetry, listOfETAs);
+          int clickedBusStopIntegerValue =
+              _convertBusStopNumberToInt(clickedBusStop.name);
+          int pubDeviceClosestBusStopToPubIntegerValue =
+              _convertBusStopNumberToInt(publisherTelemetry.closestBusStop);
 
-          if (!isCurrentETARemoved) {
+          if (clickedBusStopIntegerValue <=
+              pubDeviceClosestBusStopToPubIntegerValue) {
+            // Remove the entry of the publisher device entry in the list for
+            // clicked bus stop as it has been passed by the publisher device.
+            listOfETAs = _removePubDeviceIfPassedBStop(
+                clickedBusStop, publisherTelemetry, listOfETAs);
+          } else {
             final targetBusStopsCoordinates =
                 _getBStopCoordinatesListFromOriginToDestination(
                     publisherTelemetry, clickedBusStop, busStopList);
@@ -39,12 +47,30 @@ class EstimateTimeArrivalController {
                 await OpenRouteService.getORSInfoObject(
                     targetBusStopsCoordinates);
 
+            final closestBusStopToPubDevice = busStopList.firstWhere(
+                (busStop) => busStop.name == publisherTelemetry.closestBusStop);
+
+            final distanceBetweenPubDevAndClosestBusStop =
+                await OpenRouteService.getTotalDistanceFromPointToPoint([
+              [publisherTelemetry.longitude, publisherTelemetry.latitude],
+              [
+                closestBusStopToPubDevice.longitude,
+                closestBusStopToPubDevice.latitude
+              ]
+            ]);
+
+            // Note: Below code may be used to potentially improve the accurcay
+            // of the distance provided for show dialog.
+            final finalCalculatedETADistance = (openRouteServiceInfo.distance! -
+                distanceBetweenPubDevAndClosestBusStop);
+
             ETA eta = ETA(
               aid: publisherTelemetry.aid,
               busStopName: clickedBusStop.name,
               busName: publisherTelemetry.busName,
               estimateArrivalTime: openRouteServiceInfo.estimateTimeOfArrival,
-              distanceInKms: openRouteServiceInfo.distance,
+              // distanceInKms: finalCalculatedETADistance.toStringAsFixed(2),
+              distanceInKms: openRouteServiceInfo.distance?.toStringAsFixed(2),
               showDepartureTime: false,
             );
 
@@ -71,26 +97,24 @@ class EstimateTimeArrivalController {
     }
   }
 
-  bool _removePubDeviceIfPassedBStop(BusStop busStop,
+  List<ETA> _removePubDeviceIfPassedBStop(BusStop clickedBusStop,
       PublisherTelemetry publisherTelemetry, List<ETA> listOfETAs) {
-    int currentClosestBusStopIntegerValue =
-        _convertBusStopNumberToInt(busStop.name);
-    int closestBusStopToPubIntegerValue =
-        _convertBusStopNumberToInt(publisherTelemetry.closestBusStop);
+    return listOfETAs
+        .where((pubDeviceClosestBusStop) =>
+            pubDeviceClosestBusStop.busStopName == clickedBusStop.name)
+        .toList();
 
-    if (closestBusStopToPubIntegerValue >= currentClosestBusStopIntegerValue) {
-      final containsETA =
-          listOfETAs.any((cETA) => cETA.aid == publisherTelemetry.aid);
+    // if (closestBusStopToPubIntegerValue >= currentClosestBusStopIntegerValue) {
+    //   final containsETA =
+    //       listOfETAs.any((cETA) => cETA.aid == publisherTelemetry.aid);
 
-      if (containsETA) {
-        listOfETAs = listOfETAs
-            .where((cETA) => cETA.aid != publisherTelemetry.aid)
-            .toList();
-        return true;
-      }
-    }
-
-    return false;
+    //   if (containsETA) {
+    //     listOfETAs = listOfETAs
+    //         .where((cETA) => cETA.aid != publisherTelemetry.aid)
+    //         .toList();
+    //     return true;
+    //   }
+    // }
   }
 
   ///

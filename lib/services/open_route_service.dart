@@ -66,7 +66,7 @@ class OpenRouteService {
     }
   }
 
-  static Future<String> getTotalDistanceFromPointToPoint(
+  static Future<double> getTotalDistanceFromPointToPoint(
       List<List<double>> coordinates) async {
     final Logger logger = Logger();
     logger.d(coordinates);
@@ -99,10 +99,10 @@ class OpenRouteService {
       final route = routes[0];
       final distanceInMeters = route['summary']['distance']; // in meters
 
-      return '$distanceInMeters';
-    } else {
-      return "OpenRouteService: No Route Found";
+      return distanceInMeters;
     }
+
+    return -1;
   }
 
   static Future<OpenRouteServiceInfo> getORSInfoObject(
@@ -154,7 +154,7 @@ class OpenRouteService {
 
       return OpenRouteServiceInfo(
           estimateTimeOfArrival: estimateTimeOfArrival,
-          distance: distanceInKMs.toStringAsFixed(2));
+          distance: distanceInKMs);
     } else {
       return OpenRouteServiceInfo();
     }

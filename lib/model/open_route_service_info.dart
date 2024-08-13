@@ -1,6 +1,6 @@
 class OpenRouteServiceInfo {
   String? estimateTimeOfArrival;
-  String? distance;
+  double? distance;
 
   OpenRouteServiceInfo({this.estimateTimeOfArrival, this.distance});
 }
