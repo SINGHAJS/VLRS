@@ -42,3 +42,12 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# iOS/macOS related - CocoaPods
+ios/Podfile
+ios/Podfile.lock
+macos/Podfile
+macos/Podfile.lock
+
+# Flutter related
+flutter_export_environment.sh
