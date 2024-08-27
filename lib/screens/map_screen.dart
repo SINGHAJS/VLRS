@@ -133,9 +133,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // logger.d(ref.watch(telemetryDevicesProvider));
-    // logger.d(ref.watch(estimateTimeArrivalProvider));
-
     return Scaffold(
       body: StreamBuilder(
         stream: _webSocketService.telemetryStream().stream,
@@ -188,24 +185,28 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                 ],
               ),
               // Note: Use code below to show/use the navigation bar.
-              // _navigationUI.showNavigationBar(context),
+              _navigationUI.showNavigationBar(context),
             ]);
           } else {
             return _loadingUI.displayMapLoadingAnimation();
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        elevation: 10,
-        backgroundColor: Colors.black,
-        onPressed: () => {
-          setState(() {
-            _getUserLocation();
-          })
-        },
-        child: const Icon(
-          Icons.location_searching,
-          color: Colors.white,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 50.0),
+        child: FloatingActionButton(
+          elevation: 10,
+          backgroundColor: Colors.black,
+          onPressed: () {
+            setState(() {
+              _getUserLocation();
+            });
+          },
+          child: const Icon(
+            Icons.location_searching,
+            color: Colors.white,
+          ),
         ),
       ),
     );
