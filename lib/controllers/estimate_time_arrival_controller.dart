@@ -3,6 +3,7 @@ import 'package:vlrs/model/eta.dart';
 import 'package:vlrs/model/open_route_service_info.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
 import 'package:vlrs/services/open_route_service.dart';
+import 'package:vlrs/model/bus_stop_data.dart';
 
 class EstimateTimeArrivalController {
   Future<List<ETA>> getListOfETAs(

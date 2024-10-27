@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:vlrs/model/eta.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
 import 'package:vlrs/ui/eta_ui.dart';
+import 'package:vlrs/model/bus_stop_data.dart';
 
 class BusStopController {
   Logger _logger = Logger();

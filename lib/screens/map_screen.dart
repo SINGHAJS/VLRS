@@ -17,6 +17,8 @@ import 'package:vlrs/ui/navigation_ui.dart';
 import 'package:vlrs/utils/json_utils.dart';
 import 'package:vlrs/providers/telemetry_devices_provider.dart';
 import 'package:vlrs/providers/estimate_time_arrival_provider.dart';
+import 'package:vlrs/providers/bus_stop_data_provider.dart';
+import 'package:vlrs/model/bus_stop_data.dart';
 
 class MapScreen extends ConsumerStatefulWidget {
   const MapScreen({super.key});
@@ -42,6 +44,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   List<LatLng> _mapRouteToData = [];
   List<LatLng> _mapRouteFromData = [];
   List<BusStop> _mapBusStopData = [];
+  // List<BusStopData> _mapBusStopDataFromStream = [];
   List<BusStop> _forwardBusStopData = [];
   List<BusStop> _backwardBusStopData = [];
 
@@ -133,6 +136,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    logger.d(ref.watch(telemetryDevicesProvider));
     return Scaffold(
       body: StreamBuilder(
         stream: _webSocketService.telemetryStream().stream,
@@ -150,6 +154,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             ref
                 .read(telemetryDevicesProvider.notifier)
                 .addPublisherTelemetryDevice(snapshot.data);
+
+            // ref
+            //     .read(busStopDataProvider
+            //         .notifier) // <-- Read bus stop data from the provider
+            //     .addBusStopData(
+            //         snapshot.data); // <-- Add bus stop data from WebSocket
+
+            // _mapBusStopData = ref.watch(busStopDataProvider);
+
             return Stack(children: <Widget>[
               FlutterMap(
                 options: MapOptions(
@@ -178,7 +191,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
                   _busStopUI.displayBusStopOnMap(
                       _mapBusStopData,
                       ref.watch(telemetryDevicesProvider),
-                      _mapBusStopData,
                       _forwardBusStopData,
                       _backwardBusStopData,
                       ref.watch(estimateTimeArrivalProvider)),

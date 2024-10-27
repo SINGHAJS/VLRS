@@ -39,7 +39,14 @@ class WebSocketService {
         },
       ],
       'historyCmds': [],
-      'attrSubCmds': []
+      'attrSubCmds': [
+        {
+          'entityType': 'DEVICE',
+          'entityId': WebSocketConstants.CONFIGURATION_DEVICE_ID,
+          'scope': 'SHARED_SCOPE',
+          'cmdId': 12
+        }
+      ]
     };
 
     // Convert the JSON object to a JSON-encoded string.

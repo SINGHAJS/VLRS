@@ -6,6 +6,7 @@ import 'package:vlrs/model/bus_stop.dart';
 import 'package:vlrs/controllers/estimate_time_arrival_controller.dart';
 import 'package:vlrs/model/eta.dart';
 import 'package:vlrs/model/publisher_telemetry.dart';
+import 'package:vlrs/model/bus_stop_data.dart';
 
 class BusStopUI {
   final BusStopController _busStopController = BusStopController();
@@ -20,7 +21,6 @@ class BusStopUI {
   MarkerLayer displayBusStopOnMap(
       List<BusStop> busStopList,
       List<PublisherTelemetry> publisherTelemetry,
-      List<BusStop> busStopsList,
       List<BusStop> forwardBusStopsList,
       List<BusStop> backwardBusStopsList,
       List<ETA> ETAsList) {
